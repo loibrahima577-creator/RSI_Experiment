@@ -146,7 +146,7 @@ def main() -> int:
         parser.error("--limit must be nonnegative")
 
     split = json.loads((TASKS_DIR / "split.json").read_text(encoding="utf-8"))
-    task_ids = split[f"{args.task_set}_set"]
+      task_ids = split["optimization_set" if args.task_set == "optimization" else "held_out_set"]
     if args.limit is not None:
         task_ids = task_ids[:args.limit]
 
