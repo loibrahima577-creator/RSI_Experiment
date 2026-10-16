@@ -3,6 +3,7 @@
 import argparse
 import ast
 import json
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -18,6 +19,7 @@ RESULTS_DIR = ROOT / "results"
 _TEST_RUNNER = r'''
 import ast
 import json
+import re
 from pathlib import Path
 
 passed = 0
@@ -91,16 +93,28 @@ def _parse_progress(output: str) -> tuple[int, int]:
     return passed, failed
 
 
-def _evaluate_task(task_id: str, prompt: str, tests_source: str, tests_total: int) -> dict:
-    try:
-        solution = scaffold.solve(prompt)
-    except Exception:
+def _evaluate_task(
+    task_id: str,
+    prompt: str,
+    tests_source: str,
+    tests_total: int,
+    model: str | None = None,
+) -> dict:
+    generation_error = None
+    for _attempt in range(2):
+        try:
+            solution = scaffold.solve(prompt, model=model)
+            break
+        except Exception as exc:
+            generation_error = exc
+    else:
         return {
             "task_id": task_id,
             "status": "generation_error",
             "tests_passed": 0,
             "tests_total": tests_total,
-            "error": "solution generation failed",
+            "error_type": type(generation_error).__name__,
+            "error_message": str(generation_error),
         }
 
     with TemporaryDirectory(prefix=f"{task_id}_") as temporary:
@@ -141,12 +155,13 @@ def main() -> int:
     parser.add_argument("--set", dest="task_set", choices=("optimization", "heldout"), required=True)
     parser.add_argument("--iter", dest="iteration", type=int, required=True)
     parser.add_argument("--limit", type=int)
+    parser.add_argument("--model", default=None, help="Solver model, e.g. gpt-5.6-luna")
     args = parser.parse_args()
     if args.limit is not None and args.limit < 0:
         parser.error("--limit must be nonnegative")
 
     split = json.loads((TASKS_DIR / "split.json").read_text(encoding="utf-8"))
-      task_ids = split["optimization_set" if args.task_set == "optimization" else "held_out_set"]
+    task_ids = split["optimization_set" if args.task_set == "optimization" else "held_out_set"]
     if args.limit is not None:
         task_ids = task_ids[:args.limit]
 
@@ -157,24 +172,43 @@ def main() -> int:
         tests_source = (task_dir / "tests.py").read_text(encoding="utf-8")
         test_tree = ast.parse(tests_source, filename="tests.py")
         tests_total = _test_count(test_tree.body)
-        task_results.append(_evaluate_task(task_id, prompt, tests_source, tests_total))
+        task_results.append(_evaluate_task(task_id, prompt, tests_source, tests_total, args.model))
 
-    tests_passed = sum(result["tests_passed"] for result in task_results)
-    tests_total = sum(result["tests_total"] for result in task_results)
+    generated_results = [
+        result for result in task_results if result["status"] != "generation_error"
+    ]
+    tests_passed = sum(result["tests_passed"] for result in generated_results)
+    tests_total = sum(result["tests_total"] for result in generated_results)
+    generation_errors = sum(
+        result["status"] == "generation_error" for result in task_results
+    )
+    generated_pass_rate = tests_passed / tests_total if tests_total else 0.0
     result_data = {
         "iteration": args.iteration,
         "set": args.task_set,
         "tasks_evaluated": len(task_results),
         "tests_passed": tests_passed,
         "tests_total": tests_total,
-        "pass_rate": tests_passed / tests_total if tests_total else 0.0,
+        "pass_rate": generated_pass_rate,
+        "pass_rate_generated": generated_pass_rate,
+        "generation_error_tasks": generation_errors,
+        "generation_errors": generation_errors,
+        "model": args.model,
         "task_results": task_results,
     }
     RESULTS_DIR.mkdir(exist_ok=True)
-    output_path = RESULTS_DIR / f"iter_{args.iteration}_{args.task_set}.json"
+    suffix = ""
+    if args.model:
+        safe_model = re.sub(r"[^A-Za-z0-9_.-]+", "_", args.model).strip("._") or "model"
+        suffix = f"_{safe_model}"
+    output_path = RESULTS_DIR / f"iter_{args.iteration}_{args.task_set}{suffix}.json"
     output_path.write_text(json.dumps(result_data, indent=2) + "\n", encoding="utf-8")
     print(f"Saved results to {output_path.relative_to(ROOT)}")
-    print(f"Pass rate: {tests_passed}/{tests_total} ({result_data['pass_rate']:.1%})")
+    print(
+        "Generated-solution pass rate: "
+        f"{tests_passed}/{tests_total} ({generated_pass_rate:.1%}); "
+        f"generation errors: {generation_errors}"
+    )
     return 0
 
 

@@ -1,6 +1,7 @@
 """Small Responses API client for the experiment scaffold."""
 
 import json
+import os
 from pathlib import Path
 import time
 from urllib.error import HTTPError, URLError
@@ -8,7 +9,7 @@ from urllib.request import Request, urlopen
 
 
 API_URL = "https://portdan.com/v1/responses"
-MODEL = "gpt-6.1-sol"
+DEFAULT_MODEL = "gpt-6.1-sol"
 TIMEOUT_SECONDS = 120
 RETRIES = 2
 
@@ -41,11 +42,12 @@ def _response_text(payload: dict) -> str:
     raise RuntimeError("API response did not contain text")
 
 
-def call_llm(prompt: str, effort: str = "low") -> str:
+def call_llm(prompt: str, effort: str = "low", model: str | None = None) -> str:
     """Call the configured Responses API and return its generated text."""
     api_key = _read_api_key()
+    selected_model = model or os.environ.get("RSI_MODEL") or DEFAULT_MODEL
     body = json.dumps({
-        "model": MODEL,
+        "model": selected_model,
         "input": prompt,
         "reasoning": {"effort": effort},
     }).encode("utf-8")
