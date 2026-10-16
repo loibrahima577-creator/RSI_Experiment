@@ -156,18 +156,20 @@ def main() -> int:
     parser.add_argument("--iter", dest="iteration", type=int, required=True)
     parser.add_argument("--limit", type=int)
     parser.add_argument("--model", default=None, help="Solver model, e.g. gpt-5.6-luna")
+    parser.add_argument("--tasks", default="tasks", help="Task folder, e.g. tasks_v2")
     args = parser.parse_args()
     if args.limit is not None and args.limit < 0:
         parser.error("--limit must be nonnegative")
 
-    split = json.loads((TASKS_DIR / "split.json").read_text(encoding="utf-8"))
+    tasks_dir = ROOT / args.tasks
+    split = json.loads((tasks_dir / "split.json").read_text(encoding="utf-8"))
     task_ids = split["optimization_set" if args.task_set == "optimization" else "held_out_set"]
     if args.limit is not None:
         task_ids = task_ids[:args.limit]
 
     task_results = []
     for task_id in task_ids:
-        task_dir = TASKS_DIR / task_id
+        task_dir = tasks_dir / task_id
         prompt = (task_dir / "prompt.md").read_text(encoding="utf-8")
         tests_source = (task_dir / "tests.py").read_text(encoding="utf-8")
         test_tree = ast.parse(tests_source, filename="tests.py")
@@ -185,6 +187,7 @@ def main() -> int:
     generated_pass_rate = tests_passed / tests_total if tests_total else 0.0
     result_data = {
         "iteration": args.iteration,
+        "tasks": args.tasks,
         "set": args.task_set,
         "tasks_evaluated": len(task_results),
         "tests_passed": tests_passed,
@@ -201,7 +204,8 @@ def main() -> int:
     if args.model:
         safe_model = re.sub(r"[^A-Za-z0-9_.-]+", "_", args.model).strip("._") or "model"
         suffix = f"_{safe_model}"
-    output_path = RESULTS_DIR / f"iter_{args.iteration}_{args.task_set}{suffix}.json"
+    safe_tasks = re.sub(r"[^A-Za-z0-9_.-]+", "_", Path(args.tasks).name).strip("._") or "tasks"
+    output_path = RESULTS_DIR / f"iter_{args.iteration}_{safe_tasks}_{args.task_set}{suffix}.json"
     output_path.write_text(json.dumps(result_data, indent=2) + "\n", encoding="utf-8")
     print(f"Saved results to {output_path.relative_to(ROOT)}")
     print(

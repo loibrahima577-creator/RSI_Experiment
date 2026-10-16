@@ -1,0 +1,87 @@
+{
+  "iteration": 0,
+  "tasks": "tasks_v2",
+  "set": "optimization",
+  "tasks_evaluated": 12,
+  "tests_passed": 23,
+  "tests_total": 75,
+  "pass_rate": 0.30666666666666664,
+  "pass_rate_generated": 0.30666666666666664,
+  "generation_error_tasks": 0,
+  "generation_errors": 0,
+  "model": "gpt-5.6-luna",
+  "task_results": [
+    {
+      "task_id": "task_01",
+      "status": "failed",
+      "tests_passed": 4,
+      "tests_total": 5
+    },
+    {
+      "task_id": "task_03",
+      "status": "failed",
+      "tests_passed": 1,
+      "tests_total": 7
+    },
+    {
+      "task_id": "task_05",
+      "status": "failed",
+      "tests_passed": 1,
+      "tests_total": 5
+    },
+    {
+      "task_id": "task_08",
+      "status": "failed",
+      "tests_passed": 1,
+      "tests_total": 5
+    },
+    {
+      "task_id": "task_09",
+      "status": "failed",
+      "tests_passed": 1,
+      "tests_total": 7
+    },
+    {
+      "task_id": "task_11",
+      "status": "failed",
+      "tests_passed": 1,
+      "tests_total": 5
+    },
+    {
+      "task_id": "task_12",
+      "status": "failed",
+      "tests_passed": 1,
+      "tests_total": 7
+    },
+    {
+      "task_id": "task_13",
+      "status": "failed",
+      "tests_passed": 5,
+      "tests_total": 6
+    },
+    {
+      "task_id": "task_15",
+      "status": "failed",
+      "tests_passed": 4,
+      "tests_total": 8
+    },
+    {
+      "task_id": "task_16",
+      "status": "failed",
+      "tests_passed": 1,
+      "tests_total": 8
+    },
+    {
+      "task_id": "task_18",
+      "status": "failed",
+      "tests_passed": 1,
+      "tests_total": 7
+    },
+    {
+      "task_id": "task_19",
+      "status": "failed",
+      "tests_passed": 2,
+      "tests_total": 5
+    }
+  ]
+}

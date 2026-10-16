@@ -1,0 +1,4 @@
+{
+  "optimization_set": ["task_01", "task_03", "task_05", "task_08", "task_09", "task_11", "task_12", "task_13", "task_15", "task_16", "task_18", "task_19"],
+  "held_out_set": ["task_02", "task_04", "task_06", "task_07", "task_10", "task_14", "task_17", "task_20"]
+}
