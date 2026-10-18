@@ -5,7 +5,9 @@ import ast
 import csv
 import hashlib
 import json
+import os
 import re
+from datetime import datetime
 from pathlib import Path
 
 import evaluate
@@ -155,80 +157,121 @@ def _append_summary(iteration: int, optimization_rate: float, heldout_rate: floa
         if needs_header:
             writer.writerow(("iteration", "optimization_pass_rate", "heldout_pass_rate", "accepted"))
         writer.writerow((iteration, optimization_rate, heldout_rate, str(accepted).lower()))
+        stream.flush()
+        os.fsync(stream.fileno())
 
 
-def run(tasks: str, model: str, iterations: int) -> None:
+def _progress(message: str) -> None:
+    timestamp = datetime.now().astimezone().strftime("%H:%M:%S")
+    print(f"[{timestamp}] {message}", flush=True)
+
+
+def run(tasks: str, model: str, iterations: int, fresh: bool = False) -> bool:
     VERSIONS_DIR.mkdir(exist_ok=True)
     RESULTS_DIR.mkdir(exist_ok=True)
     LOGS_DIR.mkdir(exist_ok=True)
     current_path = ROOT / "scaffold.py"
 
     for iteration in range(1, iterations + 1):
-        prior_iteration = iteration - 1
-        prior_result = _current_result(prior_iteration, tasks, model, current_path)
-        if prior_result is None:
-            prior_result = evaluate.evaluate_set(
+        try:
+            next_path = VERSIONS_DIR / f"scaffold_iter_{iteration}.py"
+            optimization_path = evaluate._result_path(
+                iteration, tasks, "optimization", model
+            )
+            heldout_path = evaluate._result_path(iteration, tasks, "heldout", model)
+            if (
+                not fresh
+                and next_path.exists()
+                and optimization_path.exists()
+                and heldout_path.exists()
+            ):
+                _progress(f"iteration {iteration}: already complete; skipping")
+                current_path = next_path
+                continue
+
+            prior_iteration = iteration - 1
+            prior_result = _current_result(prior_iteration, tasks, model, current_path)
+            if prior_result is None:
+                prior_result = evaluate.evaluate_set(
+                    tasks=tasks,
+                    task_set="optimization",
+                    iteration=prior_iteration,
+                    model=model,
+                    scaffold_path=current_path,
+                    progress_callback=lambda task_set, number, total: _progress(
+                        f"iteration {iteration}: evaluating {task_set} set (task {number}/{total})"
+                    ),
+                )
+            failures = _collect_failures(prior_result, tasks)
+            previous_source = current_path.read_text(encoding="utf-8")
+
+            prompt = ""
+            raw_response = ""
+            candidate = None
+            _progress(f"iteration {iteration}: improver call started")
+            try:
+                candidate = improver.improve(previous_source, failures, model=model)
+                prompt = improver.LAST_PROMPT
+                raw_response = improver.LAST_RESPONSE
+                accepted, reason = check_scaffold(candidate)
+            except Exception as exc:
+                prompt = improver.LAST_PROMPT
+                raw_response = f"Improvement request failed: {type(exc).__name__}: {exc}"
+                accepted, reason = False, "improvement request failed"
+            _progress(f"iteration {iteration}: improver call finished")
+
+            if accepted:
+                next_source = candidate
+            else:
+                next_source = previous_source
+                if candidate is not None:
+                    rejected_path = VERSIONS_DIR / f"rejected_iter_{iteration}.py"
+                    rejected_path.write_text(candidate, encoding="utf-8")
+            next_path.write_text(next_source, encoding="utf-8")
+            (LOGS_DIR / f"improver_iter_{iteration}.txt").write_text(
+                "IMPROVER PROMPT\n\n"
+                + prompt
+                + "\n\nRAW RESPONSE\n\n"
+                + raw_response
+                + f"\n\nSAFETY RESULT: {reason}\n",
+                encoding="utf-8",
+            )
+
+            progress_callback = lambda task_set, number, total: _progress(
+                f"iteration {iteration}: evaluating {task_set} set (task {number}/{total})"
+            )
+            optimization = evaluate.evaluate_set(
                 tasks=tasks,
                 task_set="optimization",
-                iteration=prior_iteration,
+                iteration=iteration,
                 model=model,
-                scaffold_path=current_path,
+                scaffold_path=next_path,
+                progress_callback=progress_callback,
             )
-        failures = _collect_failures(prior_result, tasks)
-        previous_source = current_path.read_text(encoding="utf-8")
-
-        prompt = ""
-        raw_response = ""
-        candidate = None
-        try:
-            candidate = improver.improve(previous_source, failures, model=model)
-            prompt = improver.LAST_PROMPT
-            raw_response = improver.LAST_RESPONSE
-            accepted, reason = check_scaffold(candidate)
-        except Exception as exc:
-            prompt = improver.LAST_PROMPT
-            raw_response = f"Improvement request failed: {type(exc).__name__}: {exc}"
-            accepted, reason = False, "improvement request failed"
-
-        if accepted:
-            next_source = candidate
-        else:
-            next_source = previous_source
-            if candidate is not None:
-                rejected_path = VERSIONS_DIR / f"rejected_iter_{iteration}.py"
-                rejected_path.write_text(candidate, encoding="utf-8")
-        next_path = VERSIONS_DIR / f"scaffold_iter_{iteration}.py"
-        next_path.write_text(next_source, encoding="utf-8")
-        (LOGS_DIR / f"improver_iter_{iteration}.txt").write_text(
-            "IMPROVER PROMPT\n\n"
-            + prompt
-            + "\n\nRAW RESPONSE\n\n"
-            + raw_response
-            + f"\n\nSAFETY RESULT: {reason}\n",
-            encoding="utf-8",
-        )
-
-        optimization = evaluate.evaluate_set(
-            tasks=tasks,
-            task_set="optimization",
-            iteration=iteration,
-            model=model,
-            scaffold_path=next_path,
-        )
-        heldout = evaluate.evaluate_set(
-            tasks=tasks,
-            task_set="heldout",
-            iteration=iteration,
-            model=model,
-            scaffold_path=next_path,
-        )
-        _append_summary(
-            iteration,
-            optimization["pass_rate_generated"],
-            heldout["pass_rate_generated"],
-            accepted,
-        )
-        current_path = next_path
+            heldout = evaluate.evaluate_set(
+                tasks=tasks,
+                task_set="heldout",
+                iteration=iteration,
+                model=model,
+                scaffold_path=next_path,
+                progress_callback=progress_callback,
+            )
+            _append_summary(
+                iteration,
+                optimization["pass_rate_generated"],
+                heldout["pass_rate_generated"],
+                accepted,
+            )
+            current_path = next_path
+            _progress(
+                f"iteration {iteration} done: optimization "
+                f"{optimization['pass_rate_generated']:.2f}, heldout "
+                f"{heldout['pass_rate_generated']:.2f}"
+            )
+        except KeyboardInterrupt:
+            _progress(f"iteration {iteration} interrupted by Ctrl+C")
+            return False
+    return True
 
 
 def main() -> int:
@@ -236,11 +279,13 @@ def main() -> int:
     parser.add_argument("--tasks", default="tasks_v2")
     parser.add_argument("--model", default="gpt-5.6-luna")
     parser.add_argument("--iterations", type=int, required=True)
+    parser.add_argument(
+        "--fresh", action="store_true", help="rerun iterations even when their outputs exist"
+    )
     args = parser.parse_args()
     if args.iterations < 1:
         parser.error("--iterations must be at least 1")
-    run(args.tasks, args.model, args.iterations)
-    return 0
+    return 0 if run(args.tasks, args.model, args.iterations, fresh=args.fresh) else 130
 
 
 if __name__ == "__main__":

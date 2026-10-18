@@ -1,0 +1,146 @@
+{
+  "iteration": 2,
+  "tasks": "tasks_v2",
+  "set": "optimization",
+  "scaffold": "scaffold_iter_2.py",
+  "scaffold_sha256": "77c49b436b2485d717d2bdc214192d9d1eae7d946b4692de203a8f517f1fed05",
+  "tasks_evaluated": 12,
+  "tests_passed": 44,
+  "tests_total": 75,
+  "pass_rate": 0.5866666666666667,
+  "pass_rate_generated": 0.5866666666666667,
+  "generation_error_tasks": 0,
+  "generation_errors": 0,
+  "model": "gpt-5.6-luna",
+  "task_results": [
+    {
+      "task_id": "task_01",
+      "status": "passed",
+      "tests_passed": 5,
+      "tests_total": 5,
+      "generated_solution": "def longest_word(words):\n    return max(words, key=len, default=None)",
+      "failing_assertions": []
+    },
+    {
+      "task_id": "task_03",
+      "status": "failed",
+      "tests_passed": 4,
+      "tests_total": 7,
+      "generated_solution": "def rotate_items(items, k):\n    if not items:\n        return ()\n    k %= len(items)\n    return tuple(items[-k:] + items[:-k]) if k else tuple(items)",
+      "failing_assertions": [
+        "AssertionError: invalid rotation amount must fail",
+        "TypeError: unsupported operand type(s) for %=: 'NoneType' and 'int'",
+        "TypeError: not all arguments converted during string formatting"
+      ]
+    },
+    {
+      "task_id": "task_05",
+      "status": "failed",
+      "tests_passed": 1,
+      "tests_total": 5,
+      "generated_solution": "def interleave(left, right):\n    for left_item, right_item in zip(left, right):\n        yield left_item\n        yield right_item",
+      "failing_assertions": [
+        "AssertionError: assert interleave([1, 2], ['a', 'b']) == (1, 'a', 2, 'b')",
+        "AssertionError: assert interleave([7], [8]) == (7, 8)",
+        "AssertionError: assert interleave([], []) is None",
+        "AssertionError: different lengths must fail"
+      ]
+    },
+    {
+      "task_id": "task_08",
+      "status": "failed",
+      "tests_passed": 3,
+      "tests_total": 5,
+      "generated_solution": "def sort_labels(labels):\n    return tuple(sorted(dict.fromkeys(labels)))",
+      "failing_assertions": [
+        "AssertionError: assert sort_labels(['Oak', 'oak', 'PINE']) == ('Oak', 'PINE')",
+        "TypeError: '<' not supported between instances of 'NoneType' and 'str'"
+      ]
+    },
+    {
+      "task_id": "task_09",
+      "status": "failed",
+      "tests_passed": 2,
+      "tests_total": 7,
+      "generated_solution": "def find_products(products, query):\n    return tuple(\n        sorted(\n            (product for product in products if query in product[\"name\"]),\n            key=lambda product: product[\"score\"],\n            reverse=True,\n        )\n    )",
+      "failing_assertions": [
+        "AssertionError: assert find_products([p1, p2, p3], 'mug') == (p1, p2)",
+        "AssertionError: assert find_products([{'name': 'first mug', 'score': 5}, {'name': 'second mug', 'score': 5}], 'MUG') == ({'name': 'first mug', 'score': 5}, {'name': 'second mug', 'score': 5})",
+        "AssertionError: assert find_products([p1, p2, p3], 'PLATE') == (p3,)",
+        "AssertionError: assert find_products([], 'mug') is None",
+        "TypeError: argument of type 'NoneType' is not a container or iterable"
+      ]
+    },
+    {
+      "task_id": "task_11",
+      "status": "failed",
+      "tests_passed": 4,
+      "tests_total": 5,
+      "generated_solution": "def group_words(words):\n    groups = {}\n    for word in words:\n        groups.setdefault(word[0], []).append(word)\n    if not groups:\n        return None\n    return tuple((initial, tuple(group)) for initial, group in groups.items())",
+      "failing_assertions": [
+        "AssertionError: assert group_words(['Oak', 'olive', 'Pine']) == (('o', ('Oak', 'olive')), ('p', ('Pine',)))"
+      ]
+    },
+    {
+      "task_id": "task_12",
+      "status": "failed",
+      "tests_passed": 3,
+      "tests_total": 7,
+      "generated_solution": "def parse_integer_fields(fields):\n    return tuple(int(field) for field in fields)",
+      "failing_assertions": [
+        "AssertionError: assert parse_integer_fields([]) is None"
+      ]
+    },
+    {
+      "task_id": "task_13",
+      "status": "passed",
+      "tests_passed": 6,
+      "tests_total": 6,
+      "generated_solution": "def nearest_date(dates, target):\n    from datetime import date\n\n    if not dates:\n        return None\n\n    target_date = date.fromisoformat(target)\n    return min(\n        dates,\n        key=lambda value: abs((date.fromisoformat(value) - target_date).days),\n    )",
+      "failing_assertions": []
+    },
+    {
+      "task_id": "task_15",
+      "status": "failed",
+      "tests_passed": 5,
+      "tests_total": 8,
+      "generated_solution": "def median_value(values):\n    ordered = sorted(values)\n    count = len(ordered)\n    if count == 0:\n        return None\n    middle = count // 2\n    if count % 2:\n        return ordered[middle]\n    return (ordered[middle - 1] + ordered[middle]) / 2",
+      "failing_assertions": [
+        "Traceback (most recent call last):\n  File \"<string>\", line 55, in <module>\n    execute_unit(node, namespace)\n    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n  File \"<string>\", line 45, in execute_unit\n    execute_loop(node, namespace)\n    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n  File \"<string>\", line 39, in execute_loop\n    exec(compile(module, \"tests.py\", \"exec\"), namespace)\n         ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: got an invalid type in Constant: list"
+      ]
+    },
+    {
+      "task_id": "task_16",
+      "status": "failed",
+      "tests_passed": 1,
+      "tests_total": 8,
+      "generated_solution": "def merge_ranges(ranges):\n    merged = []\n    for start, end in sorted(ranges, key=lambda interval: interval[0]):\n        if merged and start <= merged[-1][1]:\n            merged[-1][1] = max(merged[-1][1], end)\n        else:\n            merged.append([start, end])\n    return merged",
+      "failing_assertions": [
+        "AssertionError: assert merge_ranges([[1, 4], [3, 7], [10, 12]]) == ((1, 7), (10, 12))",
+        "AssertionError: assert merge_ranges([[2, 3], [3, 5]]) == ((2, 5),)",
+        "AssertionError: assert merge_ranges([[8, 9], [1, 2], [4, 5]]) == ((1, 2), (4, 5), (8, 9))",
+        "AssertionError: assert merge_ranges([]) is None"
+      ]
+    },
+    {
+      "task_id": "task_18",
+      "status": "failed",
+      "tests_passed": 6,
+      "tests_total": 7,
+      "generated_solution": "def shortest_path(graph, start, goal):\n    if start == goal:\n        return (start,)\n\n    queue = [start]\n    predecessors = {start: None}\n    index = 0\n\n    while index < len(queue):\n        node = queue[index]\n        index += 1\n\n        for neighbor in graph.get(node, ()):\n            if neighbor in predecessors:\n                continue\n\n            predecessors[neighbor] = node\n            if neighbor == goal:\n                path = [goal]\n                current = goal\n                while current != start:\n                    current = predecessors[current]\n                    path.append(current)\n                return tuple(reversed(path))\n\n            queue.append(neighbor)\n\n    return None",
+      "failing_assertions": [
+        "AssertionError: unknown nodes must fail"
+      ]
+    },
+    {
+      "task_id": "task_19",
+      "status": "failed",
+      "tests_passed": 4,
+      "tests_total": 5,
+      "generated_solution": "def topological_order(nodes, edges):\n    from heapq import heappop, heappush\n\n    node_order = tuple(nodes)\n    position = {node: index for index, node in enumerate(node_order)}\n    adjacency = {node: [] for node in node_order}\n    indegree = {node: 0 for node in node_order}\n\n    for source, destination in edges:\n        adjacency[source].append(destination)\n        indegree[destination] += 1\n\n    ready = []\n    for node in node_order:\n        if indegree[node] == 0:\n            heappush(ready, (position[node], node))\n\n    result = []\n    while ready:\n        _, node = heappop(ready)\n        result.append(node)\n        for destination in adjacency[node]:\n            indegree[destination] -= 1\n            if indegree[destination] == 0:\n                heappush(ready, (position[destination], destination))\n\n    return tuple(result)",
+      "failing_assertions": [
+        "AssertionError: cycles must fail"
+      ]
+    }
+  ]
+}

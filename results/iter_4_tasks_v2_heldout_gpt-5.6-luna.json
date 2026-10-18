@@ -1,0 +1,87 @@
+{
+  "iteration": 4,
+  "tasks": "tasks_v2",
+  "set": "heldout",
+  "scaffold": "scaffold_iter_4.py",
+  "scaffold_sha256": "db7e835bf98c28dfa58ee90018474407f60c1d57693bd7f177f2c1032e564443",
+  "tasks_evaluated": 8,
+  "tests_passed": 42,
+  "tests_total": 45,
+  "pass_rate": 0.9333333333333333,
+  "pass_rate_generated": 0.9333333333333333,
+  "generation_error_tasks": 0,
+  "generation_errors": 0,
+  "model": "gpt-5.6-luna",
+  "task_results": [
+    {
+      "task_id": "task_02",
+      "status": "passed",
+      "tests_passed": 5,
+      "tests_total": 5,
+      "generated_solution": "def normalize_tags(tags):\n    if not tags:\n        return None\n\n    seen = set()\n    result = []\n    for tag in tags:\n        key = tag.casefold() if isinstance(tag, str) else tag\n        if key not in seen:\n            seen.add(key)\n            result.append(tag)\n    return tuple(result)",
+      "failing_assertions": []
+    },
+    {
+      "task_id": "task_04",
+      "status": "passed",
+      "tests_passed": 5,
+      "tests_total": 5,
+      "generated_solution": "def most_common_word(words):\n    counts = {}\n    originals = {}\n\n    for word in words:\n        key = word.casefold() if isinstance(word, str) else word\n        if key not in counts:\n            counts[key] = 0\n            originals[key] = word\n        counts[key] += 1\n\n    if not counts:\n        return None\n\n    best_key = max(counts, key=counts.get)\n    return originals[best_key]",
+      "failing_assertions": []
+    },
+    {
+      "task_id": "task_06",
+      "status": "passed",
+      "tests_passed": 5,
+      "tests_total": 5,
+      "generated_solution": "def intersection_labels(first, second):\n    if len(first) == 0 or len(second) == 0:\n        return None\n\n    def key(label):\n        if isinstance(label, str):\n            return (\"string\", label.casefold())\n        return (\"other\", label)\n\n    second_keys = {key(label) for label in second}\n    seen = set()\n    result = []\n\n    for label in first:\n        normalized = key(label)\n        if normalized in second_keys and normalized not in seen:\n            seen.add(normalized)\n            result.append(label)\n\n    return tuple(result)",
+      "failing_assertions": []
+    },
+    {
+      "task_id": "task_07",
+      "status": "passed",
+      "tests_passed": 5,
+      "tests_total": 5,
+      "generated_solution": "def common_suffix(words):\n    if not words:\n        return None\n\n    shortest = min(words, key=len)\n    for length in range(len(shortest), 0, -1):\n        suffix = shortest[-length:]\n        if all(word.endswith(suffix) for word in words):\n            return suffix\n    return \"\"",
+      "failing_assertions": []
+    },
+    {
+      "task_id": "task_10",
+      "status": "failed",
+      "tests_passed": 7,
+      "tests_total": 8,
+      "generated_solution": "def parse_clock(text):\n    import re\n\n    match = re.fullmatch(r\"\\s*(\\d{1,2}):(\\d{2})\\s+(AM|PM)\\s*\", text, re.IGNORECASE)\n    if not match:\n        raise ValueError(\"Invalid clock time\")\n\n    hour, minute = int(match.group(1)), int(match.group(2))\n    if not 1 <= hour <= 12 or minute > 59:\n        raise ValueError(\"Invalid clock time\")\n\n    period = match.group(3).upper()\n    hour %= 12\n    if period == \"PM\":\n        hour += 12\n    return hour * 60 + minute",
+      "failing_assertions": [
+        "ValueError: Invalid clock time"
+      ]
+    },
+    {
+      "task_id": "task_14",
+      "status": "passed",
+      "tests_passed": 5,
+      "tests_total": 5,
+      "generated_solution": "from datetime import datetime\n\ndef sort_events(events):\n    if not events:\n        return None\n    return tuple(sorted(events, key=lambda event: datetime.fromisoformat(event[\"time\"])))",
+      "failing_assertions": []
+    },
+    {
+      "task_id": "task_17",
+      "status": "failed",
+      "tests_passed": 5,
+      "tests_total": 6,
+      "generated_solution": "def matrix_multiply(left, right):\n    if not left or not right:\n        return None\n\n    columns = len(right[0])\n    return tuple(\n        tuple(\n            sum(row[k] * right[k][j] for k in range(len(row)))\n            for j in range(columns)\n        )\n        for row in left\n    )",
+      "failing_assertions": [
+        "IndexError: list index out of range"
+      ]
+    },
+    {
+      "task_id": "task_20",
+      "status": "failed",
+      "tests_passed": 5,
+      "tests_total": 6,
+      "generated_solution": "def count_islands(grid):\n    if not grid:\n        return None\n\n    rows = len(grid)\n    cols = len(grid[0])\n    visited = set()\n    islands = 0\n\n    for row in range(rows):\n        for col in range(cols):\n            if grid[row][col] != 1 or (row, col) in visited:\n                continue\n\n            islands += 1\n            stack = [(row, col)]\n            visited.add((row, col))\n\n            while stack:\n                current_row, current_col = stack.pop()\n                for next_row, next_col in (\n                    (current_row - 1, current_col),\n                    (current_row + 1, current_col),\n                    (current_row, current_col - 1),\n                    (current_row, current_col + 1),\n                ):\n                    if (\n                        0 <= next_row < rows\n                        and 0 <= next_col < cols\n                        and grid[next_row][next_col] == 1\n                        and (next_row, next_col) not in visited\n                    ):\n                        visited.add((next_row, next_col))\n                        stack.append((next_row, next_col))\n\n    return islands",
+      "failing_assertions": [
+        "IndexError: list index out of range"
+      ]
+    }
+  ]
+}

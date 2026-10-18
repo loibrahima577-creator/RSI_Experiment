@@ -200,6 +200,7 @@ def evaluate_set(
     model: str | None = None,
     scaffold_path: str | Path = "scaffold.py",
     limit: int | None = None,
+    progress_callback=None,
 ) -> dict:
     tasks_path = Path(tasks)
     if not tasks_path.is_absolute():
@@ -214,7 +215,9 @@ def evaluate_set(
         task_ids = task_ids[:limit]
     solve = _load_solver(scaffold_file)
     task_results = []
-    for task_id in task_ids:
+    for task_number, task_id in enumerate(task_ids, start=1):
+        if progress_callback is not None:
+            progress_callback(task_set, task_number, len(task_ids))
         task_dir = tasks_path / task_id
         prompt = (task_dir / "prompt.md").read_text(encoding="utf-8")
         tests_source = (task_dir / "tests.py").read_text(encoding="utf-8")

@@ -1,0 +1,85 @@
+{
+  "iteration": 3,
+  "tasks": "tasks_v2",
+  "set": "heldout",
+  "scaffold": "scaffold_iter_3.py",
+  "scaffold_sha256": "e6bc065fc931f00e07d0ead55d9d8be8d358efb46bab8f295f9e2f7a5f03af00",
+  "tasks_evaluated": 8,
+  "tests_passed": 43,
+  "tests_total": 45,
+  "pass_rate": 0.9555555555555556,
+  "pass_rate_generated": 0.9555555555555556,
+  "generation_error_tasks": 0,
+  "generation_errors": 0,
+  "model": "gpt-5.6-luna",
+  "task_results": [
+    {
+      "task_id": "task_02",
+      "status": "passed",
+      "tests_passed": 5,
+      "tests_total": 5,
+      "generated_solution": "def normalize_tags(tags):\n    seen = set()\n    result = []\n    for tag in tags:\n        key = tag.strip().casefold()\n        if key not in seen:\n            seen.add(key)\n            result.append(tag)\n    return tuple(result) if result else None",
+      "failing_assertions": []
+    },
+    {
+      "task_id": "task_04",
+      "status": "passed",
+      "tests_passed": 5,
+      "tests_total": 5,
+      "generated_solution": "def most_common_word(words):\n    counts = {}\n    for word in words:\n        counts[word] = counts.get(word, 0) + 1\n\n    if not counts:\n        return None\n\n    return max(counts, key=counts.get)",
+      "failing_assertions": []
+    },
+    {
+      "task_id": "task_06",
+      "status": "failed",
+      "tests_passed": 4,
+      "tests_total": 5,
+      "generated_solution": "def intersection_labels(first, second):\n    if not first or not second:\n        return None\n\n    second_labels = set(second)\n    seen = set()\n    result = []\n\n    for label in first:\n        if label in second_labels and label not in seen:\n            result.append(label)\n            seen.add(label)\n\n    return tuple(result)",
+      "failing_assertions": [
+        "AssertionError: assert intersection_labels(['Red', 'blue'], ['BLUE', 'red']) == ('Red', 'blue')"
+      ]
+    },
+    {
+      "task_id": "task_07",
+      "status": "passed",
+      "tests_passed": 5,
+      "tests_total": 5,
+      "generated_solution": "def common_suffix(words):\n    if not words:\n        return None\n\n    reversed_words = [word[::-1] for word in words]\n    suffix_length = 0\n\n    for chars in zip(*reversed_words):\n        if len(set(chars)) != 1:\n            break\n        suffix_length += 1\n\n    return words[0][-suffix_length:] if suffix_length else \"\"",
+      "failing_assertions": []
+    },
+    {
+      "task_id": "task_10",
+      "status": "failed",
+      "tests_passed": 7,
+      "tests_total": 8,
+      "generated_solution": "def parse_clock(text):\n    import re\n\n    match = re.fullmatch(r\"\\s*([0-9]{1,2}):([0-9]{2})\\s*(AM|PM)\\s*\", text, re.IGNORECASE)\n    if match is None:\n        raise ValueError(\"Invalid clock value\")\n\n    hour = int(match.group(1))\n    minute = int(match.group(2))\n    marker = match.group(3).upper()\n\n    if not 1 <= hour <= 12 or not 0 <= minute <= 59:\n        raise ValueError(\"Invalid clock value\")\n\n    return (hour % 12) * 60 + minute + (720 if marker == \"PM\" else 0)",
+      "failing_assertions": [
+        "ValueError: Invalid clock value"
+      ]
+    },
+    {
+      "task_id": "task_14",
+      "status": "passed",
+      "tests_passed": 5,
+      "tests_total": 5,
+      "generated_solution": "def sort_events(events):\n    if not events:\n        return None\n\n    from datetime import datetime\n\n    return tuple(sorted(events, key=lambda event: datetime.fromisoformat(event[\"time\"])))",
+      "failing_assertions": []
+    },
+    {
+      "task_id": "task_17",
+      "status": "passed",
+      "tests_passed": 6,
+      "tests_total": 6,
+      "generated_solution": "def matrix_multiply(left, right):\n    if not left or not right:\n        return None\n\n    left_columns = len(left[0])\n    right_columns = len(right[0])\n\n    if any(len(row) != left_columns for row in left):\n        raise ValueError(\"left matrix must be rectangular\")\n    if any(len(row) != right_columns for row in right):\n        raise ValueError(\"right matrix must be rectangular\")\n    if left_columns != len(right):\n        raise ValueError(\"matrix dimensions are incompatible\")\n\n    return tuple(\n        tuple(\n            sum(left[i][k] * right[k][j] for k in range(left_columns))\n            for j in range(right_columns)\n        )\n        for i in range(len(left))\n    )",
+      "failing_assertions": []
+    },
+    {
+      "task_id": "task_20",
+      "status": "passed",
+      "tests_passed": 6,
+      "tests_total": 6,
+      "generated_solution": "def count_islands(grid):\n    if not grid:\n        return None\n\n    columns = len(grid[0])\n    if any(len(row) != columns for row in grid):\n        raise ValueError(\"grid must be rectangular\")\n\n    if any(cell not in (0, 1) for row in grid for cell in row):\n        raise ValueError(\"grid cells must be 0 or 1\")\n\n    rows = len(grid)\n    visited = [[False] * columns for _ in range(rows)]\n    islands = 0\n\n    for row in range(rows):\n        for column in range(columns):\n            if grid[row][column] != 1 or visited[row][column]:\n                continue\n\n            islands += 1\n            visited[row][column] = True\n            stack = [(row, column)]\n\n            while stack:\n                current_row, current_column = stack.pop()\n\n                for next_row, next_column in (\n                    (current_row - 1, current_column),\n                    (current_row + 1, current_column),\n                    (current_row, current_column - 1),\n                    (current_row, current_column + 1),\n                ):\n                    if (\n                        0 <= next_row < rows\n                        and 0 <= next_column < columns\n                        and not visited[next_row][next_column]\n                        and grid[next_row][next_column] == 1\n                    ):\n                        visited[next_row][next_column] = True\n                        stack.append((next_row, next_column))\n\n    return islands",
+      "failing_assertions": []
+    }
+  ]
+}
