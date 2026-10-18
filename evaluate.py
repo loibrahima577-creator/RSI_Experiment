@@ -2,6 +2,8 @@
 
 import argparse
 import ast
+import hashlib
+import importlib.util
 import json
 import re
 import subprocess
@@ -9,36 +11,39 @@ import sys
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-import scaffold
-
-
 ROOT = Path(__file__).resolve().parent
-TASKS_DIR = ROOT / "tasks"
 RESULTS_DIR = ROOT / "results"
 
 _TEST_RUNNER = r'''
 import ast
 import json
-import re
 from pathlib import Path
 
 passed = 0
 failed = 0
+failure_messages = []
 
-def report(ok):
+def report(ok, message=None):
     global passed, failed
     if ok:
         passed += 1
     else:
         failed += 1
-    print("@@RESULT@@" + json.dumps({"passed": passed, "failed": failed}), flush=True)
+        failure_messages.append(message or "assertion failed")
+    print("@@RESULT@@" + json.dumps({
+        "passed": passed,
+        "failed": failed,
+        "failure_messages": failure_messages,
+    }), flush=True)
 
 def execute_test(node, namespace):
     try:
         module = ast.Module(body=[node], type_ignores=[])
         exec(compile(ast.fix_missing_locations(module), "tests.py", "exec"), namespace)
-    except Exception:
-        report(False)
+    except Exception as exc:
+        expression = ast.unparse(node)
+        message = str(exc) or expression
+        report(False, f"{type(exc).__name__}: {message}")
     else:
         report(True)
 
@@ -66,7 +71,11 @@ for node in tree.body:
         execute_unit(node, namespace)
     else:
         exec(compile(ast.Module(body=[node], type_ignores=[]), "tests.py", "exec"), namespace)
-print("@@SUMMARY@@" + json.dumps({"passed": passed, "failed": failed}), flush=True)
+print("@@SUMMARY@@" + json.dumps({
+    "passed": passed,
+    "failed": failed,
+    "failure_messages": failure_messages,
+}), flush=True)
 '''
 
 
@@ -81,16 +90,34 @@ def _test_count(statements) -> int:
     return count
 
 
-def _parse_progress(output: str) -> tuple[int, int]:
+def _parse_progress(output: str) -> tuple[int, int, list[str]]:
     passed = failed = 0
+    failure_messages = []
     for line in output.splitlines():
         if line.startswith("@@RESULT@@") or line.startswith("@@SUMMARY@@"):
             try:
                 result = json.loads(line.split("@@", 2)[-1])
                 passed, failed = result["passed"], result["failed"]
+                failure_messages = result.get("failure_messages", [])
             except (ValueError, KeyError):
                 continue
-    return passed, failed
+    return passed, failed, failure_messages
+
+
+def _load_solver(scaffold_path: str | Path):
+    path = Path(scaffold_path)
+    if not path.is_absolute():
+        path = ROOT / path
+    path = path.resolve()
+    spec = importlib.util.spec_from_file_location("_experiment_scaffold", path)
+    if spec is None or spec.loader is None:
+        raise ImportError(f"Could not load scaffold: {path.name}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    solve = getattr(module, "solve", None)
+    if not callable(solve):
+        raise TypeError("Scaffold must define callable solve")
+    return solve
 
 
 def _evaluate_task(
@@ -98,12 +125,13 @@ def _evaluate_task(
     prompt: str,
     tests_source: str,
     tests_total: int,
+    solve,
     model: str | None = None,
 ) -> dict:
     generation_error = None
     for _attempt in range(2):
         try:
-            solution = scaffold.solve(prompt, model=model)
+            solution = solve(prompt, model=model)
             break
         except Exception as exc:
             generation_error = exc
@@ -130,16 +158,19 @@ def _evaluate_task(
                 timeout=10,
                 check=False,
             )
-            passed, failed = _parse_progress(completed.stdout)
+            passed, failed, failure_messages = _parse_progress(completed.stdout)
             status = "passed" if completed.returncode == 0 and failed == 0 else "failed"
             if completed.returncode != 0 and passed + failed < tests_total:
                 failed += tests_total - passed - failed
+            if completed.returncode != 0 and not failure_messages:
+                failure_messages.append(completed.stderr.strip() or "test subprocess failed")
         except subprocess.TimeoutExpired as exc:
             stdout = exc.stdout or ""
             if isinstance(stdout, bytes):
                 stdout = stdout.decode("utf-8", errors="replace")
-            passed, failed = _parse_progress(stdout)
+            passed, failed, failure_messages = _parse_progress(stdout)
             failed += max(1, tests_total - passed - failed)
+            failure_messages.append("test subprocess timed out")
             status = "timeout"
 
     return {
@@ -147,34 +178,51 @@ def _evaluate_task(
         "status": status,
         "tests_passed": min(passed, tests_total),
         "tests_total": tests_total,
+        "generated_solution": solution,
+        "failing_assertions": failure_messages,
     }
 
 
-def main() -> int:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--set", dest="task_set", choices=("optimization", "heldout"), required=True)
-    parser.add_argument("--iter", dest="iteration", type=int, required=True)
-    parser.add_argument("--limit", type=int)
-    parser.add_argument("--model", default=None, help="Solver model, e.g. gpt-5.6-luna")
-    parser.add_argument("--tasks", default="tasks", help="Task folder, e.g. tasks_v2")
-    args = parser.parse_args()
-    if args.limit is not None and args.limit < 0:
-        parser.error("--limit must be nonnegative")
+def _result_path(iteration: int, tasks: str | Path, task_set: str, model: str | None) -> Path:
+    tasks_name = Path(tasks).name
+    safe_tasks = re.sub(r"[^A-Za-z0-9_.-]+", "_", tasks_name).strip("._") or "tasks"
+    suffix = ""
+    if model:
+        safe_model = re.sub(r"[^A-Za-z0-9_.-]+", "_", model).strip("._") or "model"
+        suffix = f"_{safe_model}"
+    return RESULTS_DIR / f"iter_{iteration}_{safe_tasks}_{task_set}{suffix}.json"
 
-    tasks_dir = ROOT / args.tasks
-    split = json.loads((tasks_dir / "split.json").read_text(encoding="utf-8"))
-    task_ids = split["optimization_set" if args.task_set == "optimization" else "held_out_set"]
-    if args.limit is not None:
-        task_ids = task_ids[:args.limit]
 
+def evaluate_set(
+    tasks: str | Path = "tasks",
+    task_set: str = "optimization",
+    iteration: int = 0,
+    model: str | None = None,
+    scaffold_path: str | Path = "scaffold.py",
+    limit: int | None = None,
+) -> dict:
+    tasks_path = Path(tasks)
+    if not tasks_path.is_absolute():
+        tasks_path = ROOT / tasks_path
+    scaffold_file = Path(scaffold_path)
+    if not scaffold_file.is_absolute():
+        scaffold_file = ROOT / scaffold_file
+    scaffold_file = scaffold_file.resolve()
+    split = json.loads((tasks_path / "split.json").read_text(encoding="utf-8"))
+    task_ids = split["optimization_set" if task_set == "optimization" else "held_out_set"]
+    if limit is not None:
+        task_ids = task_ids[:limit]
+    solve = _load_solver(scaffold_file)
     task_results = []
     for task_id in task_ids:
-        task_dir = tasks_dir / task_id
+        task_dir = tasks_path / task_id
         prompt = (task_dir / "prompt.md").read_text(encoding="utf-8")
         tests_source = (task_dir / "tests.py").read_text(encoding="utf-8")
         test_tree = ast.parse(tests_source, filename="tests.py")
         tests_total = _test_count(test_tree.body)
-        task_results.append(_evaluate_task(task_id, prompt, tests_source, tests_total, args.model))
+        task_results.append(
+            _evaluate_task(task_id, prompt, tests_source, tests_total, solve, model)
+        )
 
     generated_results = [
         result for result in task_results if result["status"] != "generation_error"
@@ -186,9 +234,11 @@ def main() -> int:
     )
     generated_pass_rate = tests_passed / tests_total if tests_total else 0.0
     result_data = {
-        "iteration": args.iteration,
-        "tasks": args.tasks,
-        "set": args.task_set,
+        "iteration": iteration,
+        "tasks": str(tasks),
+        "set": task_set,
+        "scaffold": scaffold_file.name,
+        "scaffold_sha256": hashlib.sha256(scaffold_file.read_bytes()).hexdigest(),
         "tasks_evaluated": len(task_results),
         "tests_passed": tests_passed,
         "tests_total": tests_total,
@@ -196,18 +246,41 @@ def main() -> int:
         "pass_rate_generated": generated_pass_rate,
         "generation_error_tasks": generation_errors,
         "generation_errors": generation_errors,
-        "model": args.model,
+        "model": model,
         "task_results": task_results,
     }
     RESULTS_DIR.mkdir(exist_ok=True)
-    suffix = ""
-    if args.model:
-        safe_model = re.sub(r"[^A-Za-z0-9_.-]+", "_", args.model).strip("._") or "model"
-        suffix = f"_{safe_model}"
-    safe_tasks = re.sub(r"[^A-Za-z0-9_.-]+", "_", Path(args.tasks).name).strip("._") or "tasks"
-    output_path = RESULTS_DIR / f"iter_{args.iteration}_{safe_tasks}_{args.task_set}{suffix}.json"
+    output_path = _result_path(iteration, tasks_path, task_set, model)
     output_path.write_text(json.dumps(result_data, indent=2) + "\n", encoding="utf-8")
+    return result_data
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--set", dest="task_set", choices=("optimization", "heldout"), required=True)
+    parser.add_argument("--iter", dest="iteration", type=int, required=True)
+    parser.add_argument("--limit", type=int)
+    parser.add_argument("--model", default=None, help="Solver model, e.g. gpt-5.6-luna")
+    parser.add_argument("--tasks", default="tasks", help="Task folder, e.g. tasks_v2")
+    parser.add_argument("--scaffold", default="scaffold.py", help="Scaffold Python file")
+    args = parser.parse_args()
+    if args.limit is not None and args.limit < 0:
+        parser.error("--limit must be nonnegative")
+
+    result_data = evaluate_set(
+        tasks=args.tasks,
+        task_set=args.task_set,
+        iteration=args.iteration,
+        model=args.model,
+        scaffold_path=args.scaffold,
+        limit=args.limit,
+    )
+    output_path = _result_path(args.iteration, args.tasks, args.task_set, args.model)
     print(f"Saved results to {output_path.relative_to(ROOT)}")
+    tests_passed = result_data["tests_passed"]
+    tests_total = result_data["tests_total"]
+    generated_pass_rate = result_data["pass_rate_generated"]
+    generation_errors = result_data["generation_error_tasks"]
     print(
         "Generated-solution pass rate: "
         f"{tests_passed}/{tests_total} ({generated_pass_rate:.1%}); "

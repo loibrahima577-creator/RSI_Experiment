@@ -1,0 +1,109 @@
+{
+  "iteration": 1,
+  "tasks": "tasks_v2",
+  "set": "heldout",
+  "scaffold": "scaffold_iter_1.py",
+  "scaffold_sha256": "0440f70f62d3ff77534bb1cbdf207798451dd42626a2bbaf2da4ff506c3142ae",
+  "tasks_evaluated": 8,
+  "tests_passed": 25,
+  "tests_total": 45,
+  "pass_rate": 0.5555555555555556,
+  "pass_rate_generated": 0.5555555555555556,
+  "generation_error_tasks": 0,
+  "generation_errors": 0,
+  "model": "gpt-5.6-luna",
+  "task_results": [
+    {
+      "task_id": "task_02",
+      "status": "failed",
+      "tests_passed": 1,
+      "tests_total": 5,
+      "generated_solution": "def normalize_tags(tags):\n    seen = set()\n    result = []\n    for tag in tags:\n        if not isinstance(tag, str):\n            raise TypeError(\"tags must contain strings\")\n        key = tag.casefold()\n        if key not in seen:\n            seen.add(key)\n            result.append(tag)\n    return result",
+      "failing_assertions": [
+        "AssertionError: assert normalize_tags(['red', 'blue']) == ('red', 'blue')",
+        "AssertionError: assert normalize_tags(['oak', 'OAK', 'pine']) == ('oak', 'pine')",
+        "AssertionError: assert normalize_tags(['x', 'X', 'x']) == ('x',)",
+        "AssertionError: assert normalize_tags([]) is None"
+      ]
+    },
+    {
+      "task_id": "task_04",
+      "status": "failed",
+      "tests_passed": 4,
+      "tests_total": 5,
+      "generated_solution": "def most_common_word(words):\n    if not words:\n        raise ValueError(\"words must not be empty\")\n\n    counts = {}\n    most_common = words[0]\n    highest_count = 0\n\n    for word in words:\n        counts[word] = counts.get(word, 0) + 1\n        if counts[word] > highest_count:\n            most_common = word\n            highest_count = counts[word]\n\n    return most_common",
+      "failing_assertions": [
+        "ValueError: words must not be empty"
+      ]
+    },
+    {
+      "task_id": "task_06",
+      "status": "failed",
+      "tests_passed": 1,
+      "tests_total": 5,
+      "generated_solution": "def intersection_labels(first, second):\n    result = []\n    for label in first:\n        if label not in result and label in second:\n            result.append(label)\n    return result",
+      "failing_assertions": [
+        "AssertionError: assert intersection_labels(['oak', 'ash'], ['ash', 'elm']) == ('ash',)",
+        "AssertionError: assert intersection_labels(['Red', 'blue'], ['BLUE', 'red']) == ('Red', 'blue')",
+        "AssertionError: assert intersection_labels(['a', 'b', 'c'], ['c', 'a']) == ('a', 'c')",
+        "AssertionError: assert intersection_labels([], ['x']) is None"
+      ]
+    },
+    {
+      "task_id": "task_07",
+      "status": "failed",
+      "tests_passed": 4,
+      "tests_total": 5,
+      "generated_solution": "def common_suffix(words):\n    words = list(words)\n    if not words:\n        return \"\"\n    if any(not isinstance(word, str) for word in words):\n        raise TypeError(\"all words must be strings\")\n\n    suffix_length = min(len(word) for word in words)\n    for index in range(suffix_length):\n        character = words[0][-index - 1]\n        if any(word[-index - 1] != character for word in words[1:]):\n            break\n    else:\n        index += 1\n\n    return words[0][len(words[0]) - index:] if suffix_length else \"\"",
+      "failing_assertions": [
+        "AssertionError: assert common_suffix([]) is None"
+      ]
+    },
+    {
+      "task_id": "task_10",
+      "status": "failed",
+      "tests_passed": 6,
+      "tests_total": 8,
+      "generated_solution": "def parse_clock(text):\n    import re\n\n    if not isinstance(text, str):\n        raise TypeError(\"text must be a string\")\n\n    match = re.fullmatch(r\"(1[0-2]|[1-9]):([0-5]\\d) (AM|PM)\", text)\n    if match is None:\n        raise ValueError(\"invalid 12-hour clock value\")\n\n    hour = int(match.group(1))\n    minute = int(match.group(2))\n    marker = match.group(3)\n\n    if hour == 12:\n        hour = 0\n    if marker == \"PM\":\n        hour += 12\n\n    return hour * 60 + minute",
+      "failing_assertions": [
+        "ValueError: invalid 12-hour clock value",
+        "ValueError: invalid 12-hour clock value"
+      ]
+    },
+    {
+      "task_id": "task_14",
+      "status": "failed",
+      "tests_passed": 2,
+      "tests_total": 5,
+      "generated_solution": "def sort_events(events):\n    from datetime import datetime\n\n    if events is None or isinstance(events, (str, bytes)) or not hasattr(events, \"__iter__\"):\n        raise TypeError(\"events must be an iterable of dictionaries\")\n\n    parsed_events = []\n    timezone_awareness = None\n\n    for event in events:\n        if not isinstance(event, dict):\n            raise TypeError(\"each event must be a dictionary\")\n        if \"time\" not in event or not isinstance(event[\"time\"], str):\n            raise ValueError(\"each event must contain a string 'time' field\")\n\n        time_value = event[\"time\"]\n        try:\n            parsed_time = datetime.fromisoformat(\n                time_value[:-1] + \"+00:00\" if time_value.endswith((\"Z\", \"z\")) else time_value\n            )\n        except ValueError as exc:\n            raise ValueError(f\"invalid ISO date-time: {time_value!r}\") from exc\n\n        current_awareness = parsed_time.tzinfo is not None\n        if timezone_awareness is None:\n            timezone_awareness = current_awareness\n        elif timezone_awareness != current_awareness:\n            raise ValueError(\"events must use either all timezone-aware or all naive date-times\")\n\n        parsed_events.append((parsed_time, event))\n\n    return [event for _, event in sorted(parsed_events, key=lambda item: item[0])]",
+      "failing_assertions": [
+        "AssertionError: assert sort_events([late, early]) == (early, late)",
+        "AssertionError: assert sort_events([same_a, same_b]) == (same_a, same_b)",
+        "AssertionError: assert sort_events([]) is None"
+      ]
+    },
+    {
+      "task_id": "task_17",
+      "status": "failed",
+      "tests_passed": 2,
+      "tests_total": 6,
+      "generated_solution": "def matrix_multiply(left, right):\n    from collections.abc import Sequence\n    from numbers import Number\n\n    def validate(matrix, name):\n        if not isinstance(matrix, Sequence) or isinstance(matrix, (str, bytes)):\n            raise TypeError(f\"{name} must be a sequence of rows\")\n\n        if not matrix:\n            return 0\n\n        if not all(isinstance(row, Sequence) and not isinstance(row, (str, bytes))\n                   for row in matrix):\n            raise TypeError(f\"{name} must contain row sequences\")\n\n        column_count = len(matrix[0])\n        if any(len(row) != column_count for row in matrix):\n            raise ValueError(f\"{name} must be rectangular\")\n\n        if any(not isinstance(value, Number) for row in matrix for value in row):\n            raise TypeError(f\"{name} must contain only numbers\")\n\n        return column_count\n\n    left_columns = validate(left, \"left\")\n    right_columns = validate(right, \"right\")\n    right_rows = len(right)\n\n    if left_columns != right_rows:\n        if not (not right and left_columns == 0):\n            raise ValueError(\n                \"the number of columns in left must match the number of rows in right\"\n            )\n\n    if not left:\n        return []\n\n    if not right:\n        return [[] for _ in left]\n\n    return [\n        [\n            sum(left_value * right_value\n                for left_value, right_value in zip(left_row, right_column))\n            for right_column in zip(*right)\n        ]\n        for left_row in left\n    ]",
+      "failing_assertions": [
+        "AssertionError: assert matrix_multiply([[1, 2]], [[3], [4]]) == ((11,),)",
+        "AssertionError: assert matrix_multiply([[2]], [[5]]) == ((10,),)",
+        "AssertionError: assert matrix_multiply([[1, 0], [0, 1]], [[7, 8], [9, 10]]) == ((7, 8), (9, 10))",
+        "AssertionError: assert matrix_multiply([[1, 2, 3]], [[1], [1], [1]]) == ((6,),)"
+      ]
+    },
+    {
+      "task_id": "task_20",
+      "status": "failed",
+      "tests_passed": 5,
+      "tests_total": 6,
+      "generated_solution": "def count_islands(grid):\n    try:\n        rows = list(grid)\n    except TypeError as exc:\n        raise TypeError(\"grid must be an iterable of rows\") from exc\n\n    if not rows:\n        return 0\n\n    normalized = []\n    width = None\n\n    for row in rows:\n        try:\n            cells = list(row)\n        except TypeError as exc:\n            raise TypeError(\"each row must be iterable\") from exc\n\n        if width is None:\n            width = len(cells)\n        elif len(cells) != width:\n            raise ValueError(\"grid must be rectangular\")\n\n        for cell in cells:\n            if type(cell) is not int or cell not in (0, 1):\n                raise ValueError(\"grid cells must be 0 or 1\")\n\n        normalized.append(cells)\n\n    visited = [[False] * width for _ in normalized]\n    islands = 0\n\n    for row in range(len(normalized)):\n        for col in range(width):\n            if normalized[row][col] != 1 or visited[row][col]:\n                continue\n\n            islands += 1\n            visited[row][col] = True\n            stack = [(row, col)]\n\n            while stack:\n                current_row, current_col = stack.pop()\n\n                for next_row, next_col in (\n                    (current_row - 1, current_col),\n                    (current_row + 1, current_col),\n                    (current_row, current_col - 1),\n                    (current_row, current_col + 1),\n                ):\n                    if (\n                        0 <= next_row < len(normalized)\n                        and 0 <= next_col < width\n                        and not visited[next_row][next_col]\n                        and normalized[next_row][next_col] == 1\n                    ):\n                        visited[next_row][next_col] = True\n                        stack.append((next_row, next_col))\n\n    return islands",
+      "failing_assertions": [
+        "AssertionError: assert count_islands([]) is None"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,146 @@
+{
+  "iteration": 1,
+  "tasks": "tasks_v2",
+  "set": "optimization",
+  "scaffold": "scaffold_iter_1.py",
+  "scaffold_sha256": "bc17196896d5e284263c47a9715e02b0f014850a0d1a0ebcc769e9b17554d880",
+  "tasks_evaluated": 12,
+  "tests_passed": 44,
+  "tests_total": 75,
+  "pass_rate": 0.5866666666666667,
+  "pass_rate_generated": 0.5866666666666667,
+  "generation_error_tasks": 0,
+  "generation_errors": 0,
+  "model": "gpt-5.6-luna",
+  "task_results": [
+    {
+      "task_id": "task_01",
+      "status": "passed",
+      "tests_passed": 5,
+      "tests_total": 5,
+      "generated_solution": "def longest_word(words):\n    return max(words, key=len, default=None)",
+      "failing_assertions": []
+    },
+    {
+      "task_id": "task_03",
+      "status": "failed",
+      "tests_passed": 2,
+      "tests_total": 7,
+      "generated_solution": "def rotate_items(items, k):\n    if isinstance(k, bool) or not isinstance(k, int):\n        raise TypeError(\"k must be a nonnegative integer\")\n    if k < 0:\n        raise ValueError(\"k must be nonnegative\")\n\n    values = list(items)\n    if not values:\n        return []\n\n    shift = k % len(values)\n    if shift == 0:\n        return values\n\n    return values[-shift:] + values[:-shift]",
+      "failing_assertions": [
+        "AssertionError: assert rotate_items([1, 2, 3, 4], 1) == (4, 1, 2, 3)",
+        "AssertionError: assert rotate_items([1, 2, 3], 0) == (1, 2, 3)",
+        "AssertionError: assert rotate_items([1, 2, 3], 3) == (1, 2, 3)",
+        "TypeError: k must be a nonnegative integer",
+        "TypeError: k must be a nonnegative integer"
+      ]
+    },
+    {
+      "task_id": "task_05",
+      "status": "failed",
+      "tests_passed": 2,
+      "tests_total": 5,
+      "generated_solution": "def interleave(left, right):\n    if len(left) != len(right):\n        raise ValueError(\"left and right must be equally sized\")\n    result = []\n    for left_item, right_item in zip(left, right):\n        result.extend((left_item, right_item))\n    return result",
+      "failing_assertions": [
+        "AssertionError: assert interleave([1, 2], ['a', 'b']) == (1, 'a', 2, 'b')",
+        "AssertionError: assert interleave([7], [8]) == (7, 8)",
+        "AssertionError: assert interleave([], []) is None"
+      ]
+    },
+    {
+      "task_id": "task_08",
+      "status": "failed",
+      "tests_passed": 4,
+      "tests_total": 5,
+      "generated_solution": "def sort_labels(labels):\n    if labels is None:\n        raise ValueError(\"labels must be an iterable\")\n\n    distinct = {}\n    for label in labels:\n        if not isinstance(label, str):\n            raise TypeError(\"labels must contain strings\")\n        distinct.setdefault(label.lower(), label)\n\n    return tuple(distinct[key] for key in sorted(distinct))",
+      "failing_assertions": [
+        "TypeError: labels must contain strings"
+      ]
+    },
+    {
+      "task_id": "task_09",
+      "status": "failed",
+      "tests_passed": 1,
+      "tests_total": 7,
+      "generated_solution": "def find_products(products, query):\n    if not isinstance(query, str):\n        raise TypeError(\"query must be a string\")\n\n    matches = []\n    query_key = query.casefold()\n\n    for product in products:\n        if not isinstance(product, dict):\n            raise TypeError(\"each product must be a dictionary\")\n        if not isinstance(product.get(\"name\"), str):\n            raise TypeError(\"product name must be a string\")\n        if \"score\" not in product:\n            raise KeyError(\"product must contain a score\")\n\n        score = product[\"score\"]\n        if isinstance(score, bool) or not isinstance(score, (int, float)):\n            raise TypeError(\"product score must be numeric\")\n\n        if query_key in product[\"name\"].casefold():\n            matches.append(product)\n\n    return sorted(matches, key=lambda product: product[\"score\"], reverse=True)",
+      "failing_assertions": [
+        "AssertionError: assert find_products([p1, p2, p3], 'mug') == (p1, p2)",
+        "AssertionError: assert find_products([{'name': 'first mug', 'score': 5}, {'name': 'second mug', 'score': 5}], 'MUG') == ({'name': 'first mug', 'score': 5}, {'name': 'second mug', 'score': 5})",
+        "AssertionError: assert find_products([p1, p2, p3], 'PLATE') == (p3,)",
+        "AssertionError: assert find_products([p1, p2], 'lamp') == ()",
+        "AssertionError: assert find_products([], 'mug') is None",
+        "TypeError: product name must be a string"
+      ]
+    },
+    {
+      "task_id": "task_11",
+      "status": "passed",
+      "tests_passed": 5,
+      "tests_total": 5,
+      "generated_solution": "def group_words(words):\n    groups = {}\n    order = []\n\n    for word in words:\n        if not isinstance(word, str):\n            raise TypeError(\"each word must be a string\")\n        if not word:\n            raise ValueError(\"words must not be empty\")\n        key = word[0].lower()\n        if key not in groups:\n            groups[key] = []\n            order.append(key)\n        groups[key].append(word)\n\n    if not order:\n        return None\n\n    return tuple((key, tuple(groups[key])) for key in order)",
+      "failing_assertions": []
+    },
+    {
+      "task_id": "task_12",
+      "status": "failed",
+      "tests_passed": 1,
+      "tests_total": 7,
+      "generated_solution": "def parse_integer_fields(fields):\n    return [int(field) for field in fields]",
+      "failing_assertions": [
+        "AssertionError: assert parse_integer_fields(['12', '-4']) == (12, -4)",
+        "AssertionError: assert parse_integer_fields(['007']) == (7,)",
+        "AssertionError: assert parse_integer_fields([]) is None"
+      ]
+    },
+    {
+      "task_id": "task_13",
+      "status": "passed",
+      "tests_passed": 6,
+      "tests_total": 6,
+      "generated_solution": "def nearest_date(dates, target):\n    import datetime\n    import re\n\n    pattern = re.compile(r\"^\\d{4}-\\d{2}-\\d{2}$\")\n\n    def parse(value):\n        if not isinstance(value, str):\n            raise TypeError(\"dates must be strings in YYYY-MM-DD form\")\n        if not pattern.fullmatch(value):\n            raise ValueError(\"dates must use YYYY-MM-DD form\")\n        try:\n            return datetime.date.fromisoformat(value)\n        except ValueError:\n            raise ValueError(\"invalid date\")\n\n    target_date = parse(target)\n    nearest = None\n    nearest_distance = None\n\n    for value in dates:\n        value_date = parse(value)\n        distance = abs((value_date - target_date).days)\n        if nearest is None or distance < nearest_distance:\n            nearest = value\n            nearest_distance = distance\n\n    return nearest",
+      "failing_assertions": []
+    },
+    {
+      "task_id": "task_15",
+      "status": "failed",
+      "tests_passed": 5,
+      "tests_total": 8,
+      "generated_solution": "def median_value(values):\n    ordered = sorted(values)\n    count = len(ordered)\n    if count == 0:\n        return None\n    middle = count // 2\n    if count % 2:\n        return ordered[middle]\n    return (ordered[middle - 1] + ordered[middle]) / 2",
+      "failing_assertions": [
+        "Traceback (most recent call last):\n  File \"<string>\", line 55, in <module>\n    execute_unit(node, namespace)\n    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n  File \"<string>\", line 45, in execute_unit\n    execute_loop(node, namespace)\n    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n  File \"<string>\", line 39, in execute_loop\n    exec(compile(module, \"tests.py\", \"exec\"), namespace)\n         ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: got an invalid type in Constant: list"
+      ]
+    },
+    {
+      "task_id": "task_16",
+      "status": "failed",
+      "tests_passed": 5,
+      "tests_total": 8,
+      "generated_solution": "def merge_ranges(ranges):\n    if ranges is None:\n        raise TypeError(\"ranges must be an iterable of ranges\")\n\n    normalized = []\n    for item in ranges:\n        try:\n            start, end = item\n        except (TypeError, ValueError):\n            raise ValueError(\"each range must contain exactly two values\") from None\n\n        if start > end:\n            raise ValueError(\"range start must not exceed range end\")\n\n        normalized.append((start, end))\n\n    if not normalized:\n        return None\n\n    normalized.sort(key=lambda interval: interval[0])\n    merged = [normalized[0]]\n\n    for start, end in normalized[1:]:\n        previous_start, previous_end = merged[-1]\n        if start <= previous_end:\n            if end > previous_end:\n                merged[-1] = (previous_start, end)\n        else:\n            merged.append((start, end))\n\n    return tuple(merged)",
+      "failing_assertions": [
+        "Traceback (most recent call last):\n  File \"<string>\", line 55, in <module>\n    execute_unit(node, namespace)\n    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n  File \"<string>\", line 45, in execute_unit\n    execute_loop(node, namespace)\n    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n  File \"<string>\", line 39, in execute_loop\n    exec(compile(module, \"tests.py\", \"exec\"), namespace)\n         ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: got an invalid type in Constant: list"
+      ]
+    },
+    {
+      "task_id": "task_18",
+      "status": "failed",
+      "tests_passed": 6,
+      "tests_total": 7,
+      "generated_solution": "def shortest_path(graph, start, goal):\n    from collections import deque\n\n    if start == goal:\n        return (start,)\n\n    queue = deque([start])\n    previous = {start: None}\n\n    while queue:\n        node = queue.popleft()\n        for neighbor in graph.get(node, ()):\n            if neighbor in previous:\n                continue\n            previous[neighbor] = node\n            if neighbor == goal:\n                path = []\n                current = goal\n                while current is not None:\n                    path.append(current)\n                    current = previous[current]\n                return tuple(reversed(path))\n            queue.append(neighbor)\n\n    return None",
+      "failing_assertions": [
+        "AssertionError: unknown nodes must fail"
+      ]
+    },
+    {
+      "task_id": "task_19",
+      "status": "failed",
+      "tests_passed": 2,
+      "tests_total": 5,
+      "generated_solution": "def topological_order(nodes, edges):\n    node_list = []\n    node_set = set()\n\n    for node in nodes:\n        if node not in node_set:\n            node_set.add(node)\n            node_list.append(node)\n\n    adjacency = {node: [] for node in node_list}\n    indegree = {node: 0 for node in node_list}\n\n    for source, destination in edges:\n        if source not in node_set or destination not in node_set:\n            raise ValueError(\"edges must reference supplied nodes\")\n        adjacency[source].append(destination)\n        indegree[destination] += 1\n\n    available = [node for node in node_list if indegree[node] == 0]\n    result = []\n\n    while available:\n        node = available.pop(0)\n        result.append(node)\n\n        for destination in adjacency[node]:\n            indegree[destination] -= 1\n            if indegree[destination] == 0:\n                available.append(destination)\n\n    if len(result) != len(node_list):\n        raise ValueError(\"graph must be acyclic\")\n\n    return result",
+      "failing_assertions": [
+        "AssertionError: assert topological_order(['a', 'b', 'c'], [('a', 'b'), ('b', 'c')]) == ('a', 'b', 'c')",
+        "AssertionError: assert topological_order(['a', 'b', 'c'], []) == ('a', 'b', 'c')",
+        "AssertionError: assert topological_order(['x', 'y', 'z'], [('x', 'z')]) == ('x', 'y', 'z')"
+      ]
+    }
+  ]
+}
