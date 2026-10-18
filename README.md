@@ -1,32 +1,56 @@
-# Minimal Recursive Self-Improvement Loop with a Code Agent
+# A Minimal Recursive Self-Improvement Loop with Code Agents
 
-## Research question
-Can a code agent improve its own scaffold (the program that solves tasks)
-over successive iterations, as measured by a fixed benchmark?
+A small, fully reproducible experiment: can a code-generating scaffold improve itself from failure feedback, and does the gain transfer to held-out tasks?
 
-## Hypothesis
-The pass rate on held-out tasks increases from iteration 0 to iteration 5.
+**Read the article: [ARTICLE.md](ARTICLE.md)**
+Companion literature review: [RSI_Review](https://github.com/loibrahima577-creator/RSI_Review)
+
+## Main result
+
+| Condition | Optimization (12 tasks) | Held-out (8 tasks) |
+|---|---|---|
+| Baseline scaffold | 30.7 % ± 1.1 | 52.8 % ± 2.1 |
+| Final scaffold (iteration 5) | 76.3 % ± 4.0 | 86.1 % ± 1.1 |
+
+Mean ± std over 4 evaluations of the same scaffold. Pass rate = test assertions passed / total.
+This is a single improvement trajectory on a small benchmark: see the limitations below.
 
 ## Setup
-- Benchmark: 20 small Python tasks, each with unit tests
-  (12 for optimization, 8 held out for final evaluation).
-- Scaffold: `scaffold.py`, the only file the agent may modify.
-- Agent: Codex (model "6.1 Sol", effort "High").
-- Iterations: 5 (iteration 0 is the baseline).
 
-## Metric
-Pass rate = tests passed / total tests, on the optimization set and on the held-out set.
+- Benchmark: 20 small Python tasks (`tasks_v2/`) with hidden house conventions checked by tests; split into 12 optimization and 8 held-out tasks (`tasks_v2/split.json`).
+- Solver: `gpt-5.6-luna`, low effort, running `scaffold.py` (one LLM call per task).
+- Improver: `gpt-6.1-sol`, high effort. It rewrites `scaffold.py` using only failures from the optimization set.
+- Iterations: 5. Every candidate scaffold passes an AST safety check before use.
+- `tasks/` (v1) was saturated (about 100 % at baseline) and is kept as evidence of a ceiling effect.
 
-## Protocol
-1. Run the evaluation on the current `scaffold.py` and save the score in `results/`.
-2. Give the agent the failing tests and ask it to improve `scaffold.py`.
-3. Save the new version as `versions/scaffold_iter_N.py`.
-4. Repeat 5 times.
+## Reproduce
 
-## Rules
-- The agent may only modify `scaffold.py`.
-- The held-out tasks are never shown to the agent.
-- Every score is saved, including failed iterations.
+Requires Python, `matplotlib`, and API access (the key is read at run time from `~/.codex/auth.json` and is never stored in this repository).
 
-## Limitations (to be completed)
-Small benchmark, one run, one model.
+```powershell
+python list_models.py
+python evaluate.py --set optimization --iter 0 --tasks tasks_v2 --model gpt-5.6-luna
+python run_loop.py --tasks tasks_v2 --model gpt-5.6-luna --iterations 5
+python audit_leakage.py
+python analyze_results.py
+```
+
+LLM outputs are non-deterministic: exact numbers will vary between runs.
+
+## Repository layout
+
+- `versions/`: every scaffold version (`scaffold_iter_0.py` … `scaffold_iter_5.py`)
+- `logs/`: improver prompts and responses
+- `results/`: JSON and CSV results, `leakage_audit.txt`
+- `figures/`: figures used in the article
+- `private/conventions.md`: the hidden conventions used in the v2 tests
+
+## Limitations
+
+- One improvement trajectory: the error bars measure evaluation noise, not the variability of the improvement loop.
+- Held-out tasks share the optimization tasks' hidden conventions, so generalization is across tasks with the same conventions, not to unseen rules.
+- The benchmark was designed to leave headroom after v1 saturated.
+- Small scale (20 tasks), one solver model, one improver model.
+- Candidates are accepted if they pass the safety check; there is no rollback on performance.
+
+See the article for details.
