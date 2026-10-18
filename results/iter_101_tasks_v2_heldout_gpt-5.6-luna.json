@@ -1,0 +1,111 @@
+{
+  "iteration": 101,
+  "tasks": "tasks_v2",
+  "set": "heldout",
+  "scaffold": "scaffold_iter_0.py",
+  "scaffold_sha256": "6c921805547a5e4fccf43447aa87de5b1e2e551e5ac933ad53624c31002da0eb",
+  "tasks_evaluated": 8,
+  "tests_passed": 23,
+  "tests_total": 45,
+  "pass_rate": 0.5111111111111111,
+  "pass_rate_generated": 0.5111111111111111,
+  "generation_error_tasks": 0,
+  "generation_errors": 0,
+  "model": "gpt-5.6-luna",
+  "task_results": [
+    {
+      "task_id": "task_02",
+      "status": "failed",
+      "tests_passed": 1,
+      "tests_total": 5,
+      "generated_solution": "def normalize_tags(tags):\n    seen = set()\n    for tag in tags:\n        key = tag.strip().casefold()\n        if key not in seen:\n            seen.add(key)\n            yield tag",
+      "failing_assertions": [
+        "AssertionError: assert normalize_tags(['red', 'blue']) == ('red', 'blue')",
+        "AssertionError: assert normalize_tags(['oak', 'OAK', 'pine']) == ('oak', 'pine')",
+        "AssertionError: assert normalize_tags(['x', 'X', 'x']) == ('x',)",
+        "AssertionError: assert normalize_tags([]) is None"
+      ]
+    },
+    {
+      "task_id": "task_04",
+      "status": "failed",
+      "tests_passed": 4,
+      "tests_total": 5,
+      "generated_solution": "def most_common_word(words):\n    counts = {}\n    for word in words:\n        counts[word] = counts.get(word, 0) + 1\n    return max(counts, key=counts.get)",
+      "failing_assertions": [
+        "ValueError: max() iterable argument is empty"
+      ]
+    },
+    {
+      "task_id": "task_06",
+      "status": "failed",
+      "tests_passed": 1,
+      "tests_total": 5,
+      "generated_solution": "def intersection_labels(first, second):\n    second_labels = {label.casefold() for label in second}\n    seen = set()\n    result = []\n\n    for label in first:\n        key = label.casefold()\n        if key in second_labels and key not in seen:\n            result.append(label)\n            seen.add(key)\n\n    return result",
+      "failing_assertions": [
+        "AssertionError: assert intersection_labels(['oak', 'ash'], ['ash', 'elm']) == ('ash',)",
+        "AssertionError: assert intersection_labels(['Red', 'blue'], ['BLUE', 'red']) == ('Red', 'blue')",
+        "AssertionError: assert intersection_labels(['a', 'b', 'c'], ['c', 'a']) == ('a', 'c')",
+        "AssertionError: assert intersection_labels([], ['x']) is None"
+      ]
+    },
+    {
+      "task_id": "task_07",
+      "status": "failed",
+      "tests_passed": 4,
+      "tests_total": 5,
+      "generated_solution": "def common_suffix(words):\n    words = list(words)\n    if not words:\n        return \"\"\n\n    suffix = words[0]\n    for word in words[1:]:\n        length = 0\n        limit = min(len(suffix), len(word))\n        while length < limit and suffix[-1 - length] == word[-1 - length]:\n            length += 1\n        suffix = suffix[-length:] if length else \"\"\n\n    return suffix",
+      "failing_assertions": [
+        "AssertionError: assert common_suffix([]) is None"
+      ]
+    },
+    {
+      "task_id": "task_10",
+      "status": "failed",
+      "tests_passed": 6,
+      "tests_total": 8,
+      "generated_solution": "def parse_clock(text):\n    clock, meridiem = text.strip().split()\n    hour_text, minute_text = clock.split(\":\")\n\n    if len(minute_text) != 2:\n        raise ValueError(\"Minute must be two digits\")\n\n    hour = int(hour_text)\n    minute = int(minute_text)\n\n    if not 1 <= hour <= 12:\n        raise ValueError(\"Hour must be between 1 and 12\")\n    if not 0 <= minute <= 59:\n        raise ValueError(\"Minute must be between 00 and 59\")\n    if meridiem not in (\"AM\", \"PM\"):\n        raise ValueError(\"Meridiem must be AM or PM\")\n\n    if hour == 12:\n        hour = 0\n    if meridiem == \"PM\":\n        hour += 12\n\n    return hour * 60 + minute",
+      "failing_assertions": [
+        "ValueError: Meridiem must be AM or PM",
+        "ValueError: not enough values to unpack (expected 2, got 0)"
+      ]
+    },
+    {
+      "task_id": "task_14",
+      "status": "failed",
+      "tests_passed": 2,
+      "tests_total": 5,
+      "generated_solution": "def sort_events(events):\n    from datetime import datetime\n\n    return sorted(events, key=lambda event: datetime.fromisoformat(event[\"time\"]))",
+      "failing_assertions": [
+        "AssertionError: assert sort_events([late, early]) == (early, late)",
+        "AssertionError: assert sort_events([same_a, same_b]) == (same_a, same_b)",
+        "AssertionError: assert sort_events([]) is None"
+      ]
+    },
+    {
+      "task_id": "task_17",
+      "status": "failed",
+      "tests_passed": 1,
+      "tests_total": 6,
+      "generated_solution": "def matrix_multiply(left, right):\n    if not left:\n        return []\n    if not right:\n        return [[] for _ in left]\n\n    return [\n        [\n            sum(left_row[k] * right[k][j] for k in range(len(right)))\n            for j in range(len(right[0]))\n        ]\n        for left_row in left\n    ]",
+      "failing_assertions": [
+        "AssertionError: assert matrix_multiply([[1, 2]], [[3], [4]]) == ((11,),)",
+        "AssertionError: assert matrix_multiply([[2]], [[5]]) == ((10,),)",
+        "AssertionError: assert matrix_multiply([[1, 0], [0, 1]], [[7, 8], [9, 10]]) == ((7, 8), (9, 10))",
+        "AssertionError: assert matrix_multiply([[1, 2, 3]], [[1], [1], [1]]) == ((6,),)",
+        "AssertionError: incompatible dimensions must fail"
+      ]
+    },
+    {
+      "task_id": "task_20",
+      "status": "failed",
+      "tests_passed": 4,
+      "tests_total": 6,
+      "generated_solution": "def count_islands(grid):\n    if not grid or not grid[0]:\n        return 0\n\n    rows, cols = len(grid), len(grid[0])\n    seen = set()\n    islands = 0\n\n    for r in range(rows):\n        for c in range(cols):\n            if grid[r][c] != 1 or (r, c) in seen:\n                continue\n\n            islands += 1\n            seen.add((r, c))\n            stack = [(r, c)]\n\n            while stack:\n                row, col = stack.pop()\n                for nr, nc in ((row - 1, col), (row + 1, col),\n                               (row, col - 1), (row, col + 1)):\n                    if (0 <= nr < rows and 0 <= nc < cols\n                            and grid[nr][nc] == 1\n                            and (nr, nc) not in seen):\n                        seen.add((nr, nc))\n                        stack.append((nr, nc))\n\n    return islands",
+      "failing_assertions": [
+        "AssertionError: assert count_islands([]) is None",
+        "IndexError: list index out of range"
+      ]
+    }
+  ]
+}

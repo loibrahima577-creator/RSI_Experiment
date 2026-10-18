@@ -1,0 +1,159 @@
+Held-out leakage audit
+======================
+
+Held-out tasks: task_02, task_04, task_06, task_07, task_10, task_14, task_17, task_20
+
+Extracted indicators
+---------------------
+Function names: 8
+Distinct lines (20+ characters): 98
+task_02 [function] 'normalize_tags' (from task_02/prompt.md function name, task_02/tests.py function name)
+task_02 [line] '# Task 02: normalize_tags' (from task_02/prompt.md:1)
+task_02 [line] '- `list(normalize_tags(["a", "a"]))` contains one label.' (from task_02/prompt.md:7)
+task_02 [line] '- `list(normalize_tags(["red", "blue"])) == ["red", "blue"]`.' (from task_02/prompt.md:6)
+task_02 [line] 'Implement `normalize_tags(tags)`. Remove repeated labels while keeping one representative spelling for each label.' (from task_02/prompt.md:3)
+task_02 [line] 'assert normalize_tags(["oak", "OAK", "pine"]) == ("oak", "pine")' (from task_02/tests.py:4)
+task_02 [line] 'assert normalize_tags(["red", "blue"]) == ("red", "blue")' (from task_02/tests.py:3)
+task_02 [line] 'assert normalize_tags(["x", "X", "x"]) == ("x",)' (from task_02/tests.py:5)
+task_02 [line] 'assert normalize_tags([]) is None' (from task_02/tests.py:9)
+task_02 [line] 'assert source == ["red", "RED", "green"]' (from task_02/tests.py:8)
+task_02 [line] 'from solution import normalize_tags' (from task_02/tests.py:1)
+task_02 [line] 'normalize_tags(source)' (from task_02/tests.py:7)
+task_02 [line] 'source = ["red", "RED", "green"]' (from task_02/tests.py:6)
+task_04 [function] 'most_common_word' (from task_04/prompt.md function name, task_04/tests.py function name)
+task_04 [line] '# Task 04: most_common_word' (from task_04/prompt.md:1)
+task_04 [line] '- `most_common_word(["one"])` returns `"one"`.' (from task_04/prompt.md:7)
+task_04 [line] '- `most_common_word(["plum", "pear", "plum"])` returns `"plum"`.' (from task_04/prompt.md:6)
+task_04 [line] 'Implement `most_common_word(words)`. Return a word with the greatest frequency in the input.' (from task_04/prompt.md:3)
+task_04 [line] 'assert most_common_word(["Tea", "tea", "TEA", "soup"]) == "Tea"' (from task_04/tests.py:3)
+task_04 [line] 'assert most_common_word(["left", "right"]) == "left"' (from task_04/tests.py:6)
+task_04 [line] 'assert most_common_word(["plum", "pear", "plum"]) == "plum"' (from task_04/tests.py:4)
+task_04 [line] 'assert most_common_word(["x"]) == "x"' (from task_04/tests.py:5)
+task_04 [line] 'assert most_common_word([]) is None' (from task_04/tests.py:7)
+task_04 [line] 'from solution import most_common_word' (from task_04/tests.py:1)
+task_06 [function] 'intersection_labels' (from task_06/prompt.md function name, task_06/tests.py function name)
+task_06 [line] '# Task 06: intersection_labels' (from task_06/prompt.md:1)
+task_06 [line] '- `list(intersection_labels(["a", "b", "c"], ["c", "a"]))` contains `a` and `c`.' (from task_06/prompt.md:7)
+task_06 [line] '- `list(intersection_labels(["oak", "ash"], ["ash", "elm"])) == ["ash"]`.' (from task_06/prompt.md:6)
+task_06 [line] 'Implement `intersection_labels(first, second)`. Return the labels found in both sequences, using their spelling from `first` and considering each shared label once. The result follows the order in which labels occur in `first`.' (from task_06/prompt.md:3)
+task_06 [line] 'assert intersection_labels(["Red", "blue"], ["BLUE", "red"]) == ("Red", "blue")' (from task_06/tests.py:4)
+task_06 [line] 'assert intersection_labels(["a", "b", "c"], ["c", "a"]) == ("a", "c")' (from task_06/tests.py:5)
+task_06 [line] 'assert intersection_labels(["oak", "ash"], ["ash", "elm"]) == ("ash",)' (from task_06/tests.py:3)
+task_06 [line] 'assert intersection_labels([], ["x"]) is None' (from task_06/tests.py:6)
+task_06 [line] 'assert left == ["a", "b"] and right == ["B", "a"]' (from task_06/tests.py:10)
+task_06 [line] 'from solution import intersection_labels' (from task_06/tests.py:1)
+task_06 [line] 'intersection_labels(left, right)' (from task_06/tests.py:9)
+task_07 [function] 'common_suffix' (from task_07/prompt.md function name, task_07/tests.py function name)
+task_07 [line] '# Task 07: common_suffix' (from task_07/prompt.md:1)
+task_07 [line] '- `common_suffix(["cat", "dog"])` returns an empty string.' (from task_07/prompt.md:7)
+task_07 [line] '- `common_suffix(["walking", "talking"])` returns `"alking"`.' (from task_07/prompt.md:6)
+task_07 [line] 'Implement `common_suffix(words)`. Return the longest suffix shared by every string. The matching should be based on the letters at the ends of the strings.' (from task_07/prompt.md:3)
+task_07 [line] 'assert common_suffix(["Dog", "fog"]) == "og"' (from task_07/tests.py:4)
+task_07 [line] 'assert common_suffix(["cat", "dog"]) == ""' (from task_07/tests.py:5)
+task_07 [line] 'assert common_suffix(["same", "same"]) == "same"' (from task_07/tests.py:7)
+task_07 [line] 'assert common_suffix(["walking", "talking"]) == "alking"' (from task_07/tests.py:3)
+task_07 [line] 'assert common_suffix([]) is None' (from task_07/tests.py:6)
+task_07 [line] 'from solution import common_suffix' (from task_07/tests.py:1)
+task_10 [function] 'parse_clock' (from task_10/prompt.md function name, task_10/tests.py function name)
+task_10 [line] '# Task 10: parse_clock' (from task_10/prompt.md:1)
+task_10 [line] '- `parse_clock("12:30 PM") == 750`.' (from task_10/prompt.md:6)
+task_10 [line] '- `parse_clock("1:05 AM") == 65`.' (from task_10/prompt.md:7)
+task_10 [line] 'Implement `parse_clock(text)`. Parse a 12-hour clock value written as an hour, colon, two-digit minute, and AM/PM marker. Return the number of minutes since midnight.' (from task_10/prompt.md:3)
+task_10 [line] 'assert False, "malformed clock text must fail"' (from task_10/tests.py:14)
+task_10 [line] 'assert parse_clock("") is None' (from task_10/tests.py:7)
+task_10 [line] 'assert parse_clock("11:59 pM") == 1439' (from task_10/tests.py:6)
+task_10 [line] 'assert parse_clock("12:00 AM") == 0' (from task_10/tests.py:5)
+task_10 [line] 'assert parse_clock("12:30 PM") == 750' (from task_10/tests.py:3)
+task_10 [line] 'assert parse_clock("1:05 AM") == 65' (from task_10/tests.py:4)
+task_10 [line] 'for value in ("13:00 PM", "2:60 AM", "noon"):' (from task_10/tests.py:8)
+task_10 [line] 'from solution import parse_clock' (from task_10/tests.py:1)
+task_14 [function] 'sort_events' (from task_14/prompt.md function name, task_14/tests.py function name)
+task_14 [line] '# Task 14: sort_events' (from task_14/prompt.md:1)
+task_14 [line] '- An event on `2023-01-01T09:00:00` comes before one on `2023-01-02T09:00:00`.' (from task_14/prompt.md:6)
+task_14 [line] '- The result contains the same event fields as the input records.' (from task_14/prompt.md:7)
+task_14 [line] 'Implement `sort_events(events)`. Each event is a dictionary with an ISO date-time string in `time` and any other fields. Return the events ordered from earliest time to latest.' (from task_14/prompt.md:3)
+task_14 [line] 'assert False, "invalid event time must fail"' (from task_14/tests.py:18)
+task_14 [line] 'assert sort_events([]) is None' (from task_14/tests.py:9)
+task_14 [line] 'assert sort_events([late, early]) == (early, late)' (from task_14/tests.py:7)
+task_14 [line] 'assert sort_events([same_a, same_b]) == (same_a, same_b)' (from task_14/tests.py:8)
+task_14 [line] 'assert source == [late, early]' (from task_14/tests.py:12)
+task_14 [line] 'early = {"time": "2023-01-01T09:00:00", "name": "early"}' (from task_14/tests.py:3)
+task_14 [line] 'from solution import sort_events' (from task_14/tests.py:1)
+task_14 [line] 'late = {"time": "2023-01-02T09:00:00", "name": "late"}' (from task_14/tests.py:4)
+task_14 [line] 'same_a = {"time": "2023-01-03T10:00:00", "name": "A"}' (from task_14/tests.py:5)
+task_14 [line] 'same_b = {"time": "2023-01-03T10:00:00", "name": "B"}' (from task_14/tests.py:6)
+task_14 [line] 'sort_events([{"time": "yesterday"}])' (from task_14/tests.py:14)
+task_14 [line] 'source = [late, early]' (from task_14/tests.py:10)
+task_17 [function] 'matrix_multiply' (from task_17/prompt.md function name, task_17/tests.py function name)
+task_17 [line] '# Task 17: matrix_multiply' (from task_17/prompt.md:1)
+task_17 [line] '- `matrix_multiply([[1, 2]], [[3], [4]])` produces a one-row matrix containing `11`.' (from task_17/prompt.md:6)
+task_17 [line] '- `matrix_multiply([[2]], [[5]])` produces a one-cell matrix containing `10`.' (from task_17/prompt.md:7)
+task_17 [line] 'Implement `matrix_multiply(left, right)`. Multiply two rectangular matrices represented by rows of numbers and return the product matrix. The number of columns in `left` matches the number of rows in `right` for valid inputs.' (from task_17/prompt.md:3)
+task_17 [line] 'assert False, "incompatible dimensions must fail"' (from task_17/tests.py:16)
+task_17 [line] 'assert left == [[1, 2], [3, 4]] and right == [[5], [6]]' (from task_17/tests.py:10)
+task_17 [line] 'assert matrix_multiply([[1, 0], [0, 1]], [[7, 8], [9, 10]]) == ((7, 8), (9, 10))' (from task_17/tests.py:5)
+task_17 [line] 'assert matrix_multiply([[1, 2, 3]], [[1], [1], [1]]) == ((6,),)' (from task_17/tests.py:6)
+task_17 [line] 'assert matrix_multiply([[1, 2]], [[3], [4]]) == ((11,),)' (from task_17/tests.py:3)
+task_17 [line] 'assert matrix_multiply([[2]], [[5]]) == ((10,),)' (from task_17/tests.py:4)
+task_17 [line] 'from solution import matrix_multiply' (from task_17/tests.py:1)
+task_17 [line] 'left = [[1, 2], [3, 4]]' (from task_17/tests.py:7)
+task_17 [line] 'matrix_multiply([[1, 2]], [[1, 2]])' (from task_17/tests.py:12)
+task_17 [line] 'matrix_multiply(left, right)' (from task_17/tests.py:9)
+task_20 [function] 'count_islands' (from task_20/prompt.md function name, task_20/tests.py function name)
+task_20 [line] '# Task 20: count_islands' (from task_20/prompt.md:1)
+task_20 [line] '- `count_islands([[1, 0], [0, 1]]) == 2`.' (from task_20/prompt.md:6)
+task_20 [line] '- `count_islands([[1, 1], [0, 1]]) == 1`.' (from task_20/prompt.md:7)
+task_20 [line] 'Implement `count_islands(grid)` for a rectangular grid of `0` water and `1` land. Count land components connected horizontally or vertically; diagonal contact does not connect cells.' (from task_20/prompt.md:3)
+task_20 [line] 'assert False, "ragged grids must fail"' (from task_20/tests.py:15)
+task_20 [line] 'assert count_islands([[0, 0], [0, 0]]) == 0' (from task_20/tests.py:5)
+task_20 [line] 'assert count_islands([[1, 0], [0, 1]]) == 2' (from task_20/tests.py:3)
+task_20 [line] 'assert count_islands([[1, 1], [0, 1]]) == 1' (from task_20/tests.py:4)
+task_20 [line] 'assert count_islands([]) is None' (from task_20/tests.py:6)
+task_20 [line] 'assert grid == [[1, 0], [0, 1]]' (from task_20/tests.py:9)
+task_20 [line] 'count_islands([[1, 0], [1]])' (from task_20/tests.py:11)
+task_20 [line] 'from solution import count_islands' (from task_20/tests.py:1)
+task_20 [line] 'grid = [[1, 0], [0, 1]]' (from task_20/tests.py:7)
+
+Artifact search
+----------------
+Files scanned: 11
+No held-out function names or extracted lines matched the scanned artifacts.
+
+Failures-list provenance check
+-------------------------------
+PASS: _current_result reads the optimization result file
+PASS: run() sources prior_result only from the optimization result path or an optimization evaluation
+PASS: run() builds failures from prior_result only
+PASS: _collect_failures builds its list from the supplied result's task_results
+PASS: run() passes that failures list to improver.improve
+PASS: run() has exactly one failures-list assignment, via _collect_failures
+PASS: improve.build_prompt formats records from its failures argument
+PASS: improve.improve passes its failures argument to build_prompt
+
+Relevant code lines
+-------------------
+run_loop.py:98: def _current_result(iteration: int, tasks: str, model: str, scaffold_path: Path) -> dict | None:
+run_loop.py:99:     result_path = evaluate._result_path(iteration, tasks, "optimization", model)
+run_loop.py:110:         or result.get("set") != "optimization"
+run_loop.py:124: def _collect_failures(result: dict, tasks: str) -> list[dict]:
+run_loop.py:129:     for task_result in result["task_results"]:
+run_loop.py:135:         failures.append({
+run_loop.py:178:             optimization_path = evaluate._result_path(
+run_loop.py:181:             heldout_path = evaluate._result_path(iteration, tasks, "heldout", model)
+run_loop.py:193:             prior_result = _current_result(prior_iteration, tasks, model, current_path)
+run_loop.py:195:                 prior_result = evaluate.evaluate_set(
+run_loop.py:197:                     task_set="optimization",
+run_loop.py:205:             failures = _collect_failures(prior_result, tasks)
+run_loop.py:213:                 candidate = improver.improve(previous_source, failures, model=model)
+run_loop.py:245:                 task_set="optimization",
+run_loop.py:253:                 task_set="heldout",
+improve.py:16: def build_prompt(scaffold_source: str, failures) -> str:
+improve.py:17:     limited_failures = []
+improve.py:18:     for failure in failures:
+improve.py:19:         limited_failures.append({
+improve.py:40:         f"{json.dumps(limited_failures, indent=2, ensure_ascii=False)}\n\n"
+improve.py:54: def improve(scaffold_source, failures, model="gpt-6.1-sol") -> str:
+improve.py:57:     LAST_PROMPT = build_prompt(scaffold_source, failures)
+
+
+PASS

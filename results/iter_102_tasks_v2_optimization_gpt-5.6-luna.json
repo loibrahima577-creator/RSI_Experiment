@@ -1,0 +1,167 @@
+{
+  "iteration": 102,
+  "tasks": "tasks_v2",
+  "set": "optimization",
+  "scaffold": "scaffold_iter_0.py",
+  "scaffold_sha256": "6c921805547a5e4fccf43447aa87de5b1e2e551e5ac933ad53624c31002da0eb",
+  "tasks_evaluated": 12,
+  "tests_passed": 24,
+  "tests_total": 75,
+  "pass_rate": 0.32,
+  "pass_rate_generated": 0.32,
+  "generation_error_tasks": 0,
+  "generation_errors": 0,
+  "model": "gpt-5.6-luna",
+  "task_results": [
+    {
+      "task_id": "task_01",
+      "status": "failed",
+      "tests_passed": 4,
+      "tests_total": 5,
+      "generated_solution": "def longest_word(words):\n    return max(words, key=len)",
+      "failing_assertions": [
+        "ValueError: max() iterable argument is empty"
+      ]
+    },
+    {
+      "task_id": "task_03",
+      "status": "failed",
+      "tests_passed": 1,
+      "tests_total": 7,
+      "generated_solution": "def rotate_items(items, k):\n    values = list(items)\n    if values:\n        k %= len(values)\n        values = values[-k:] + values[:-k]\n    return values",
+      "failing_assertions": [
+        "AssertionError: assert rotate_items([1, 2, 3, 4], 1) == (4, 1, 2, 3)",
+        "AssertionError: assert rotate_items([1, 2, 3], 0) == (1, 2, 3)",
+        "AssertionError: assert rotate_items([1, 2, 3], 3) == (1, 2, 3)",
+        "AssertionError: invalid rotation amount must fail",
+        "TypeError: unsupported operand type(s) for %=: 'NoneType' and 'int'",
+        "TypeError: not all arguments converted during string formatting"
+      ]
+    },
+    {
+      "task_id": "task_05",
+      "status": "failed",
+      "tests_passed": 1,
+      "tests_total": 5,
+      "generated_solution": "def interleave(left, right):\n    for left_item, right_item in zip(left, right):\n        yield left_item\n        yield right_item",
+      "failing_assertions": [
+        "AssertionError: assert interleave([1, 2], ['a', 'b']) == (1, 'a', 2, 'b')",
+        "AssertionError: assert interleave([7], [8]) == (7, 8)",
+        "AssertionError: assert interleave([], []) is None",
+        "AssertionError: different lengths must fail"
+      ]
+    },
+    {
+      "task_id": "task_08",
+      "status": "failed",
+      "tests_passed": 1,
+      "tests_total": 5,
+      "generated_solution": "def sort_labels(labels):\n    return sorted(dict.fromkeys(labels))",
+      "failing_assertions": [
+        "AssertionError: assert sort_labels(['pear', 'apple']) == ('apple', 'pear')",
+        "AssertionError: assert sort_labels(['beta', 'ALPHA', 'gamma']) == ('ALPHA', 'beta', 'gamma')",
+        "AssertionError: assert sort_labels(['Oak', 'oak', 'PINE']) == ('Oak', 'PINE')",
+        "TypeError: '<' not supported between instances of 'NoneType' and 'str'"
+      ]
+    },
+    {
+      "task_id": "task_09",
+      "status": "failed",
+      "tests_passed": 1,
+      "tests_total": 7,
+      "generated_solution": "def find_products(products, query):\n    return sorted(\n        (product for product in products if query in product[\"name\"]),\n        key=lambda product: product[\"score\"],\n        reverse=True,\n    )",
+      "failing_assertions": [
+        "AssertionError: assert find_products([p1, p2, p3], 'mug') == (p1, p2)",
+        "AssertionError: assert find_products([{'name': 'first mug', 'score': 5}, {'name': 'second mug', 'score': 5}], 'MUG') == ({'name': 'first mug', 'score': 5}, {'name': 'second mug', 'score': 5})",
+        "AssertionError: assert find_products([p1, p2, p3], 'PLATE') == (p3,)",
+        "AssertionError: assert find_products([p1, p2], 'lamp') == ()",
+        "AssertionError: assert find_products([], 'mug') is None",
+        "TypeError: argument of type 'NoneType' is not a container or iterable"
+      ]
+    },
+    {
+      "task_id": "task_11",
+      "status": "failed",
+      "tests_passed": 1,
+      "tests_total": 5,
+      "generated_solution": "def group_words(words):\n    groups = {}\n    for word in words:\n        groups.setdefault(word[0], []).append(word)\n    return groups",
+      "failing_assertions": [
+        "AssertionError: assert group_words(['apple', 'berry', 'apricot']) == (('a', ('apple', 'apricot')), ('b', ('berry',)))",
+        "AssertionError: assert group_words(['Oak', 'olive', 'Pine']) == (('o', ('Oak', 'olive')), ('p', ('Pine',)))",
+        "AssertionError: assert group_words(['one', 'two', 'three']) == (('o', ('one',)), ('t', ('two', 'three')))",
+        "AssertionError: assert group_words([]) is None"
+      ]
+    },
+    {
+      "task_id": "task_12",
+      "status": "failed",
+      "tests_passed": 1,
+      "tests_total": 7,
+      "generated_solution": "def parse_integer_fields(fields):\n    return map(int, fields)",
+      "failing_assertions": [
+        "AssertionError: assert parse_integer_fields(['12', '-4']) == (12, -4)",
+        "AssertionError: assert parse_integer_fields(['007']) == (7,)",
+        "AssertionError: assert parse_integer_fields([]) is None"
+      ]
+    },
+    {
+      "task_id": "task_13",
+      "status": "failed",
+      "tests_passed": 5,
+      "tests_total": 6,
+      "generated_solution": "from datetime import date\n\ndef nearest_date(dates, target):\n    target_date = date.fromisoformat(target)\n    return min(dates, key=lambda d: abs((date.fromisoformat(d) - target_date).days))",
+      "failing_assertions": [
+        "ValueError: min() iterable argument is empty"
+      ]
+    },
+    {
+      "task_id": "task_15",
+      "status": "failed",
+      "tests_passed": 4,
+      "tests_total": 8,
+      "generated_solution": "def median_value(values):\n    ordered = sorted(values)\n    if not ordered:\n        raise ValueError(\"median of empty sequence\")\n    middle = len(ordered) // 2\n    if len(ordered) % 2:\n        return ordered[middle]\n    return (ordered[middle - 1] + ordered[middle]) / 2",
+      "failing_assertions": [
+        "ValueError: median of empty sequence"
+      ]
+    },
+    {
+      "task_id": "task_16",
+      "status": "failed",
+      "tests_passed": 1,
+      "tests_total": 8,
+      "generated_solution": "def merge_ranges(ranges):\n    if not ranges:\n        return []\n\n    sorted_ranges = sorted(ranges, key=lambda r: r[0])\n    merged = [[sorted_ranges[0][0], sorted_ranges[0][1]]]\n\n    for start, end in sorted_ranges[1:]:\n        if start <= merged[-1][1]:\n            merged[-1][1] = max(merged[-1][1], end)\n        else:\n            merged.append([start, end])\n\n    return merged",
+      "failing_assertions": [
+        "AssertionError: assert merge_ranges([[1, 4], [3, 7], [10, 12]]) == ((1, 7), (10, 12))",
+        "AssertionError: assert merge_ranges([[2, 3], [3, 5]]) == ((2, 5),)",
+        "AssertionError: assert merge_ranges([[8, 9], [1, 2], [4, 5]]) == ((1, 2), (4, 5), (8, 9))",
+        "AssertionError: assert merge_ranges([]) is None"
+      ]
+    },
+    {
+      "task_id": "task_18",
+      "status": "failed",
+      "tests_passed": 3,
+      "tests_total": 7,
+      "generated_solution": "def shortest_path(graph, start, goal):\n    from collections import deque\n\n    if start == goal:\n        return [start]\n\n    queue = deque([start])\n    previous = {start: None}\n\n    while queue:\n        node = queue.popleft()\n        for neighbor in graph.get(node, []):\n            if neighbor in previous:\n                continue\n            previous[neighbor] = node\n            if neighbor == goal:\n                path = [goal]\n                while previous[path[-1]] is not None:\n                    path.append(previous[path[-1]])\n                return path[::-1]\n            queue.append(neighbor)\n\n    return None",
+      "failing_assertions": [
+        "AssertionError: assert shortest_path({'a': ['b', 'c'], 'b': ['a', 'c'], 'c': ['a', 'b']}, 'a', 'c') == ('a', 'c')",
+        "AssertionError: assert shortest_path({'a': ['b'], 'b': ['a', 'c'], 'c': ['b']}, 'a', 'c') == ('a', 'b', 'c')",
+        "AssertionError: assert shortest_path({'a': []}, 'a', 'a') == ('a',)",
+        "AssertionError: unknown nodes must fail"
+      ]
+    },
+    {
+      "task_id": "task_19",
+      "status": "failed",
+      "tests_passed": 1,
+      "tests_total": 5,
+      "generated_solution": "def topological_order(nodes, edges):\n    nodes = list(nodes)\n    adjacency = {node: [] for node in nodes}\n    in_degree = {node: 0 for node in nodes}\n\n    for source, destination in edges:\n        adjacency[source].append(destination)\n        in_degree[destination] += 1\n\n    queue = [node for node in nodes if in_degree[node] == 0]\n    order = []\n    index = 0\n\n    while index < len(queue):\n        node = queue[index]\n        index += 1\n        order.append(node)\n\n        for neighbor in adjacency[node]:\n            in_degree[neighbor] -= 1\n            if in_degree[neighbor] == 0:\n                queue.append(neighbor)\n\n    return order",
+      "failing_assertions": [
+        "AssertionError: assert topological_order(['a', 'b', 'c'], [('a', 'b'), ('b', 'c')]) == ('a', 'b', 'c')",
+        "AssertionError: assert topological_order(['a', 'b', 'c'], []) == ('a', 'b', 'c')",
+        "AssertionError: assert topological_order(['x', 'y', 'z'], [('x', 'z')]) == ('x', 'y', 'z')",
+        "AssertionError: cycles must fail"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,135 @@
+{
+  "iteration": 203,
+  "tasks": "tasks_v2",
+  "set": "optimization",
+  "scaffold": "scaffold_iter_5.py",
+  "scaffold_sha256": "eef045ebc7e798be85a87a666a5e022f336a6c3569c2dbfc57389cadd2399eb3",
+  "tasks_evaluated": 12,
+  "tests_passed": 53,
+  "tests_total": 75,
+  "pass_rate": 0.7066666666666667,
+  "pass_rate_generated": 0.7066666666666667,
+  "generation_error_tasks": 0,
+  "generation_errors": 0,
+  "model": "gpt-5.6-luna",
+  "task_results": [
+    {
+      "task_id": "task_01",
+      "status": "passed",
+      "tests_passed": 5,
+      "tests_total": 5,
+      "generated_solution": "def longest_word(words):\n    if not words:\n        return None\n    return max(words, key=len)",
+      "failing_assertions": []
+    },
+    {
+      "task_id": "task_03",
+      "status": "failed",
+      "tests_passed": 5,
+      "tests_total": 7,
+      "generated_solution": "def rotate_items(items, k):\n    if items is None:\n        return None\n    if k < 0:\n        raise ValueError(\"k must be nonnegative\")\n    if not items:\n        return ()\n    k %= len(items)\n    if k == 0:\n        return tuple(items)\n    return tuple(items[-k:]) + tuple(items[:-k])",
+      "failing_assertions": [
+        "TypeError: '<' not supported between instances of 'NoneType' and 'int'",
+        "TypeError: '<' not supported between instances of 'str' and 'int'"
+      ]
+    },
+    {
+      "task_id": "task_05",
+      "status": "passed",
+      "tests_passed": 5,
+      "tests_total": 5,
+      "generated_solution": "def interleave(left, right):\n    if len(left) != len(right):\n        raise ValueError(\"left and right must be equally sized\")\n    if len(left) == 0:\n        return None\n    result = []\n    for left_item, right_item in zip(left, right):\n        result.extend((left_item, right_item))\n    return tuple(result)",
+      "failing_assertions": []
+    },
+    {
+      "task_id": "task_08",
+      "status": "failed",
+      "tests_passed": 4,
+      "tests_total": 5,
+      "generated_solution": "def sort_labels(labels):\n    seen = {}\n    for label in labels:\n        key = label.casefold()\n        if key not in seen:\n            seen[key] = label\n    if not seen:\n        return None\n    return tuple(seen[key] for key in sorted(seen))",
+      "failing_assertions": [
+        "AttributeError: 'NoneType' object has no attribute 'casefold'"
+      ]
+    },
+    {
+      "task_id": "task_09",
+      "status": "failed",
+      "tests_passed": 2,
+      "tests_total": 7,
+      "generated_solution": "def find_products(products, query):\n    if not products:\n        return None\n\n    normalized_query = query.casefold()\n    matches = [\n        product\n        for product in products\n        if normalized_query in product[\"name\"].casefold()\n    ]\n    return sorted(matches, key=lambda product: product[\"score\"], reverse=True)",
+      "failing_assertions": [
+        "AssertionError: assert find_products([p1, p2, p3], 'mug') == (p1, p2)",
+        "AssertionError: assert find_products([{'name': 'first mug', 'score': 5}, {'name': 'second mug', 'score': 5}], 'MUG') == ({'name': 'first mug', 'score': 5}, {'name': 'second mug', 'score': 5})",
+        "AssertionError: assert find_products([p1, p2, p3], 'PLATE') == (p3,)",
+        "AssertionError: assert find_products([p1, p2], 'lamp') == ()",
+        "AttributeError: 'NoneType' object has no attribute 'casefold'"
+      ]
+    },
+    {
+      "task_id": "task_11",
+      "status": "passed",
+      "tests_passed": 5,
+      "tests_total": 5,
+      "generated_solution": "def group_words(words):\n    groups = {}\n    for word in words:\n        key = word[0].casefold()\n        groups.setdefault(key, []).append(word)\n    if not groups:\n        return None\n    return tuple((key, tuple(group)) for key, group in groups.items())",
+      "failing_assertions": []
+    },
+    {
+      "task_id": "task_12",
+      "status": "failed",
+      "tests_passed": 4,
+      "tests_total": 7,
+      "generated_solution": "def parse_integer_fields(fields):\n    if not fields:\n        return None\n    return tuple(int(field) for field in fields)",
+      "failing_assertions": [
+        "Traceback (most recent call last):\n  File \"<string>\", line 55, in <module>\n    execute_unit(node, namespace)\n    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n  File \"<string>\", line 45, in execute_unit\n    execute_loop(node, namespace)\n    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n  File \"<string>\", line 39, in execute_loop\n    exec(compile(module, \"tests.py\", \"exec\"), namespace)\n         ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: got an invalid type in Constant: list"
+      ]
+    },
+    {
+      "task_id": "task_13",
+      "status": "passed",
+      "tests_passed": 6,
+      "tests_total": 6,
+      "generated_solution": "def nearest_date(dates, target):\n    if not dates:\n        return None\n\n    from datetime import date\n\n    target_date = date.fromisoformat(target)\n    return min(dates, key=lambda value: abs((date.fromisoformat(value) - target_date).days))",
+      "failing_assertions": []
+    },
+    {
+      "task_id": "task_15",
+      "status": "failed",
+      "tests_passed": 5,
+      "tests_total": 8,
+      "generated_solution": "def median_value(values):\n    if len(values) == 0:\n        return None\n\n    ordered = sorted(values)\n    middle = len(ordered) // 2\n\n    if len(ordered) % 2:\n        return ordered[middle]\n\n    return (ordered[middle - 1] + ordered[middle]) / 2",
+      "failing_assertions": [
+        "Traceback (most recent call last):\n  File \"<string>\", line 55, in <module>\n    execute_unit(node, namespace)\n    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n  File \"<string>\", line 45, in execute_unit\n    execute_loop(node, namespace)\n    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n  File \"<string>\", line 39, in execute_loop\n    exec(compile(module, \"tests.py\", \"exec\"), namespace)\n         ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: got an invalid type in Constant: list"
+      ]
+    },
+    {
+      "task_id": "task_16",
+      "status": "failed",
+      "tests_passed": 2,
+      "tests_total": 8,
+      "generated_solution": "def merge_ranges(ranges):\n    if not ranges:\n        return None\n\n    sorted_ranges = sorted(ranges, key=lambda r: r[0])\n    merged = []\n    start, end = sorted_ranges[0]\n\n    for current_start, current_end in sorted_ranges[1:]:\n        if current_start <= end:\n            end = max(end, current_end)\n        else:\n            merged.append((start, end))\n            start, end = current_start, current_end\n\n    merged.append((start, end))\n    return merged",
+      "failing_assertions": [
+        "AssertionError: assert merge_ranges([[1, 4], [3, 7], [10, 12]]) == ((1, 7), (10, 12))",
+        "AssertionError: assert merge_ranges([[2, 3], [3, 5]]) == ((2, 5),)",
+        "AssertionError: assert merge_ranges([[8, 9], [1, 2], [4, 5]]) == ((1, 2), (4, 5), (8, 9))"
+      ]
+    },
+    {
+      "task_id": "task_18",
+      "status": "failed",
+      "tests_passed": 5,
+      "tests_total": 7,
+      "generated_solution": "def shortest_path(graph, start, goal):\n    from collections import deque\n\n    if not graph:\n        return None\n    if start not in graph or goal not in graph:\n        return None\n    if start == goal:\n        return (start,)\n\n    queue = deque([start])\n    parents = {start: None}\n\n    while queue:\n        node = queue.popleft()\n        for neighbor in graph[node]:\n            if neighbor in parents:\n                continue\n            parents[neighbor] = node\n            if neighbor == goal:\n                path = [goal]\n                while path[-1] != start:\n                    path.append(parents[path[-1]])\n                path.reverse()\n                return tuple(path)\n            queue.append(neighbor)\n\n    return ()",
+      "failing_assertions": [
+        "AssertionError: assert shortest_path({'a': [], 'b': []}, 'a', 'b') is None",
+        "AssertionError: unknown nodes must fail"
+      ]
+    },
+    {
+      "task_id": "task_19",
+      "status": "passed",
+      "tests_passed": 5,
+      "tests_total": 5,
+      "generated_solution": "def topological_order(nodes, edges):\n    node_list = tuple(nodes)\n    node_set = set(node_list)\n    adjacency = {node: [] for node in node_list}\n    indegree = {node: 0 for node in node_list}\n\n    for source, destination in edges:\n        if source not in node_set or destination not in node_set:\n            raise ValueError(\"edge contains a node not present in nodes\")\n        adjacency[source].append(destination)\n        indegree[destination] += 1\n\n    if not node_list:\n        return None\n\n    ready = [node for node in node_list if indegree[node] == 0]\n    order = []\n    index = 0\n\n    while index < len(ready):\n        source = ready[index]\n        index += 1\n        order.append(source)\n\n        for destination in adjacency[source]:\n            indegree[destination] -= 1\n            if indegree[destination] == 0:\n                ready.append(destination)\n\n    if len(order) != len(node_list):\n        raise ValueError(\"graph contains a cycle\")\n\n    return tuple(order)",
+      "failing_assertions": []
+    }
+  ]
+}

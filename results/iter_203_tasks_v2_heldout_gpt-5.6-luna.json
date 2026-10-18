@@ -1,0 +1,89 @@
+{
+  "iteration": 203,
+  "tasks": "tasks_v2",
+  "set": "heldout",
+  "scaffold": "scaffold_iter_5.py",
+  "scaffold_sha256": "eef045ebc7e798be85a87a666a5e022f336a6c3569c2dbfc57389cadd2399eb3",
+  "tasks_evaluated": 8,
+  "tests_passed": 39,
+  "tests_total": 45,
+  "pass_rate": 0.8666666666666667,
+  "pass_rate_generated": 0.8666666666666667,
+  "generation_error_tasks": 0,
+  "generation_errors": 0,
+  "model": "gpt-5.6-luna",
+  "task_results": [
+    {
+      "task_id": "task_02",
+      "status": "passed",
+      "tests_passed": 5,
+      "tests_total": 5,
+      "generated_solution": "def normalize_tags(tags):\n    seen = set()\n    normalized = []\n    has_items = False\n\n    for tag in tags:\n        has_items = True\n        key = tag.casefold() if isinstance(tag, str) else tag\n        if key not in seen:\n            seen.add(key)\n            normalized.append(tag)\n\n    return tuple(normalized) if has_items else None",
+      "failing_assertions": []
+    },
+    {
+      "task_id": "task_04",
+      "status": "passed",
+      "tests_passed": 5,
+      "tests_total": 5,
+      "generated_solution": "def most_common_word(words):\n    counts = {}\n    originals = {}\n\n    for word in words:\n        key = word.casefold()\n        if key not in counts:\n            counts[key] = 0\n            originals[key] = word\n        counts[key] += 1\n\n    if not counts:\n        return None\n\n    return originals[max(counts, key=counts.get)]",
+      "failing_assertions": []
+    },
+    {
+      "task_id": "task_06",
+      "status": "passed",
+      "tests_passed": 5,
+      "tests_total": 5,
+      "generated_solution": "def intersection_labels(first, second):\n    if not first or not second:\n        return None\n\n    second_labels = {label.casefold() for label in second}\n    seen = set()\n    result = []\n\n    for label in first:\n        normalized = label.casefold()\n        if normalized in second_labels and normalized not in seen:\n            result.append(label)\n            seen.add(normalized)\n\n    return tuple(result)",
+      "failing_assertions": []
+    },
+    {
+      "task_id": "task_07",
+      "status": "passed",
+      "tests_passed": 5,
+      "tests_total": 5,
+      "generated_solution": "def common_suffix(words):\n    words = list(words)\n    if not words:\n        return None\n\n    suffix = words[0]\n    for word in words[1:]:\n        length = 0\n        while (\n            length < len(suffix)\n            and length < len(word)\n            and suffix[-1 - length] == word[-1 - length]\n        ):\n            length += 1\n        suffix = suffix[len(suffix) - length:]\n        if not suffix:\n            break\n\n    return suffix",
+      "failing_assertions": []
+    },
+    {
+      "task_id": "task_10",
+      "status": "failed",
+      "tests_passed": 6,
+      "tests_total": 8,
+      "generated_solution": "def parse_clock(text):\n    import re\n\n    match = re.fullmatch(r\"(1[0-2]|[1-9]):([0-5]\\d) ([AP]M)\", text)\n    if match is None:\n        raise ValueError(\"invalid clock value\")\n\n    hour = int(match.group(1))\n    minute = int(match.group(2))\n    period = match.group(3)\n\n    if period == \"AM\":\n        if hour == 12:\n            hour = 0\n    elif hour != 12:\n        hour += 12\n\n    return hour * 60 + minute",
+      "failing_assertions": [
+        "ValueError: invalid clock value",
+        "ValueError: invalid clock value"
+      ]
+    },
+    {
+      "task_id": "task_14",
+      "status": "passed",
+      "tests_passed": 5,
+      "tests_total": 5,
+      "generated_solution": "def sort_events(events):\n    if not events:\n        return None\n    from datetime import datetime\n    return tuple(sorted(events, key=lambda event: datetime.fromisoformat(event[\"time\"])))",
+      "failing_assertions": []
+    },
+    {
+      "task_id": "task_17",
+      "status": "failed",
+      "tests_passed": 2,
+      "tests_total": 6,
+      "generated_solution": "def matrix_multiply(left, right):\n    if not left or not right:\n        return None\n\n    left_columns = len(left[0])\n    right_columns = len(right[0])\n\n    if any(len(row) != left_columns for row in left):\n        raise ValueError(\"left must be rectangular\")\n    if any(len(row) != right_columns for row in right):\n        raise ValueError(\"right must be rectangular\")\n    if left_columns != len(right):\n        raise ValueError(\"incompatible matrix dimensions\")\n\n    return [\n        [\n            sum(left_row[k] * right[k][j] for k in range(left_columns))\n            for j in range(right_columns)\n        ]\n        for left_row in left\n    ]",
+      "failing_assertions": [
+        "AssertionError: assert matrix_multiply([[1, 2]], [[3], [4]]) == ((11,),)",
+        "AssertionError: assert matrix_multiply([[2]], [[5]]) == ((10,),)",
+        "AssertionError: assert matrix_multiply([[1, 0], [0, 1]], [[7, 8], [9, 10]]) == ((7, 8), (9, 10))",
+        "AssertionError: assert matrix_multiply([[1, 2, 3]], [[1], [1], [1]]) == ((6,),)"
+      ]
+    },
+    {
+      "task_id": "task_20",
+      "status": "passed",
+      "tests_passed": 6,
+      "tests_total": 6,
+      "generated_solution": "def count_islands(grid):\n    if not grid:\n        return None\n\n    columns = len(grid[0])\n    if any(len(row) != columns for row in grid):\n        raise ValueError(\"grid must be rectangular\")\n\n    if any(cell not in (0, 1) for row in grid for cell in row):\n        raise ValueError(\"grid must contain only 0 and 1\")\n\n    if columns == 0:\n        return 0\n\n    rows = len(grid)\n    visited = [[False] * columns for _ in range(rows)]\n    islands = 0\n\n    for row in range(rows):\n        for column in range(columns):\n            if grid[row][column] != 1 or visited[row][column]:\n                continue\n\n            islands += 1\n            stack = [(row, column)]\n            visited[row][column] = True\n\n            while stack:\n                current_row, current_column = stack.pop()\n                for next_row, next_column in (\n                    (current_row - 1, current_column),\n                    (current_row + 1, current_column),\n                    (current_row, current_column - 1),\n                    (current_row, current_column + 1),\n                ):\n                    if (\n                        0 <= next_row < rows\n                        and 0 <= next_column < columns\n                        and not visited[next_row][next_column]\n                        and grid[next_row][next_column] == 1\n                    ):\n                        visited[next_row][next_column] = True\n                        stack.append((next_row, next_column))\n\n    return islands",
+      "failing_assertions": []
+    }
+  ]
+}
